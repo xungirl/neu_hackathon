@@ -4,7 +4,7 @@ import { Wand2, Check, Loader2 } from 'lucide-react';
 import PhotoProcessor from '../components/ai/PhotoProcessor';
 import VideoProcessor from '../components/ai/VideoProcessor';
 import { PhotoAnalysisResult, VideoAnalysisResult } from '../types/ai';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { petsService } from '../api/services/pets';
 
 const PostPet = () => {
