@@ -7,18 +7,18 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from app.core.deps import get_current_user_id
 from app.core.response import api_success
 from app.core.security import create_access_token, hash_password, verify_password
-from app.db.sqlite import SQLiteDatabase
+from app.db.database import Database
 from app.schemas.user import AuthResponse, UserLogin, UserRegister, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-def _get_db(request: Request) -> SQLiteDatabase:
+def _get_db(request: Request) -> Database:
     return request.app.state.db
 
 
 @router.post("/register", response_model=dict)
-def register(body: UserRegister, db: SQLiteDatabase = Depends(_get_db)):
+def register(body: UserRegister, db: Database = Depends(_get_db)):
     with db.connection() as conn:
         existing = conn.execute("SELECT id FROM users WHERE email = ?", (body.email,)).fetchone()
         if existing:
@@ -38,7 +38,7 @@ def register(body: UserRegister, db: SQLiteDatabase = Depends(_get_db)):
 
 
 @router.post("/login", response_model=dict)
-def login(body: UserLogin, db: SQLiteDatabase = Depends(_get_db)):
+def login(body: UserLogin, db: Database = Depends(_get_db)):
     with db.connection() as conn:
         row = conn.execute(
             "SELECT id, email, name, hashed_password, avatar FROM users WHERE email = ?",
@@ -56,7 +56,7 @@ def login(body: UserLogin, db: SQLiteDatabase = Depends(_get_db)):
 
 
 @router.get("/me", response_model=dict)
-def me(user_id: str = Depends(get_current_user_id), db: SQLiteDatabase = Depends(_get_db)):
+def me(user_id: str = Depends(get_current_user_id), db: Database = Depends(_get_db)):
     with db.connection() as conn:
         row = conn.execute(
             "SELECT id, email, name, avatar FROM users WHERE id = ?", (user_id,)

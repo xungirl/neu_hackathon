@@ -7,11 +7,11 @@ from typing import Any
 from app.ai.dog_matcher import GeoLocation, MatchNotifier, StrayDogReport
 from app.ai.photo_analyzer import PetAIRepository
 from app.ai.video_analyzer import PetDynamicInfoRepository
-from app.db.sqlite import SQLiteDatabase
+from app.db.database import Database
 
 
 class SQLitePetRepository(PetAIRepository):
-    def __init__(self, db: SQLiteDatabase) -> None:
+    def __init__(self, db: Database) -> None:
         self.db = db
 
     def update_pet_ai_tags(self, pet_id: str, ai_tags: dict[str, Any]) -> None:
@@ -30,7 +30,7 @@ class SQLitePetRepository(PetAIRepository):
 
 
 class SQLitePetDynamicInfoRepository(PetDynamicInfoRepository):
-    def __init__(self, db: SQLiteDatabase) -> None:
+    def __init__(self, db: Database) -> None:
         self.db = db
 
     def create_pet_dynamic_info(self, pet_id: str, dynamic_info: dict[str, Any]) -> None:
@@ -58,7 +58,7 @@ class SQLitePetDynamicInfoRepository(PetDynamicInfoRepository):
 
 
 class SQLiteStrayReportRepository:
-    def __init__(self, db: SQLiteDatabase) -> None:
+    def __init__(self, db: Database) -> None:
         self.db = db
 
     def upsert_report(self, report: StrayDogReport) -> None:
@@ -126,7 +126,7 @@ class SQLiteStrayReportRepository:
 
 
 class SQLiteMatchNotifier(MatchNotifier):
-    def __init__(self, db: SQLiteDatabase) -> None:
+    def __init__(self, db: Database) -> None:
         self.db = db
 
     def notify_possible_match(

@@ -13,7 +13,7 @@ from app.api.ai_routes import router as ai_router
 from app.routes.auth import router as auth_router
 from app.core.response import api_error, api_success
 from app.core.settings import Settings, get_settings
-from app.db.sqlite import SQLiteDatabase
+from app.db.database import Database
 from app.repositories.ai_repositories import (
     SQLiteMatchNotifier,
     SQLitePetDynamicInfoRepository,
@@ -35,7 +35,7 @@ def _create_ai_client(settings: Settings) -> GeminiClient | MockGeminiClient:
 
 
 def _initialize_runtime(app: FastAPI, settings: Settings) -> None:
-    db = SQLiteDatabase(settings.sqlite_path)
+    db = Database(database_url=settings.database_url, sqlite_path=settings.sqlite_path)
     db.initialize()
 
     ai_client = _create_ai_client(settings)

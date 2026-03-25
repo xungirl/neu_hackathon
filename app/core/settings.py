@@ -35,6 +35,7 @@ def _to_int(value: str | None, default: int) -> int:
 @dataclass(frozen=True)
 class Settings:
     api_prefix: str
+    database_url: str | None
     sqlite_path: str
     gemini_api_key: str | None
     gemini_image_model: str
@@ -65,6 +66,7 @@ def get_settings() -> Settings:
 
     return Settings(
         api_prefix=os.getenv("API_PREFIX", "/api"),
+        database_url=os.getenv("DATABASE_URL"),
         sqlite_path=os.getenv("SQLITE_PATH", "data/goodle.db"),
         gemini_api_key=os.getenv("GEMINI_API_KEY"),
         gemini_image_model=os.getenv("GEMINI_IMAGE_MODEL", "gemini-3-flash-preview"),
