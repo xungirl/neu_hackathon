@@ -47,6 +47,8 @@ class Settings:
     max_time_gap_hours: int
     mock_mode: bool
     cors_origins: list[str]
+    jwt_secret: str
+    jwt_expire_days: int
 
     @property
     def sqlite_file(self) -> Path:
@@ -75,4 +77,6 @@ def get_settings() -> Settings:
         max_time_gap_hours=_to_int(os.getenv("MATCH_MAX_TIME_GAP_HOURS"), 72),
         mock_mode=_to_bool(os.getenv("AI_MOCK_MODE"), default=False),
         cors_origins=cors_origins,
+        jwt_secret=os.getenv("JWT_SECRET", "goodle-secret-change-in-production"),
+        jwt_expire_days=_to_int(os.getenv("JWT_EXPIRE_DAYS"), 7),
     )

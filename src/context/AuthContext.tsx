@@ -16,7 +16,7 @@ interface AuthContextType {
     loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -27,10 +27,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const response = await authService.getCurrentUser();
-                    setUser((response as any).data);
-                } catch (error) {
-                    console.error('Failed to restore session', error);
+                    const res = await authService.getCurrentUser();
+                    setUser((res as any).data);
+                } catch {
                     localStorage.removeItem('token');
                 }
             }
@@ -56,10 +55,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};

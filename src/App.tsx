@@ -10,24 +10,33 @@ import Adoption from './pages/Adoption';
 import PetDetails from './pages/PetDetails';
 import PostPet from './pages/PostPet';
 import Login from './pages/Login';
+import Register from './pages/Register';
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen flex flex-col bg-gray-50 font-body">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/match" element={<Matching />} />
-            <Route path="/lost-found" element={<LostFound />} />
-            <Route path="/adoption" element={<Adoption />} />
-            <Route path="/adoption/:id" element={<PetDetails />} />
-            <Route path="/post" element={<PostPet />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
-          <Footer />
-        </div>
+        <Routes>
+          {/* Auth pages — no Navbar/Footer */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Main app layout */}
+          <Route path="/*" element={
+            <div className="min-h-screen flex flex-col bg-gray-50 font-body">
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/match" element={<Matching />} />
+                <Route path="/lost-found" element={<LostFound />} />
+                <Route path="/adoption" element={<Adoption />} />
+                <Route path="/adoption/:id" element={<PetDetails />} />
+                <Route path="/post" element={<PostPet />} />
+              </Routes>
+              <Footer />
+            </div>
+          } />
+        </Routes>
       </Router>
     </AuthProvider>
   );
