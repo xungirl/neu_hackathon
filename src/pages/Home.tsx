@@ -1,8 +1,37 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Heart, MapPin, Home as HomeIcon, Video, Shield, Wand2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Heart, MapPin, Home as HomeIcon, Video, Shield, Wand2, Upload, Loader2, Check, ArrowRight } from 'lucide-react';
+import { aiService } from '../api/services/ai';
+import { PhotoAnalysisResult } from '../types/ai';
 
 const Home = () => {
+  const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [result, setResult] = useState<PhotoAnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setError(null);
+    setResult(null);
+    setPreview(URL.createObjectURL(file));
+    setAnalyzing(true);
+
+    try {
+      const tempPetId = `temp_${Date.now()}`;
+      const res = await aiService.uploadAndAnalyzePhoto(tempPetId, file);
+      setResult((res as any).data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Analysis failed. You can still create a profile manually.');
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
   return (
     <div className="flex-grow">
       <div className="relative bg-gradient-to-b from-orange-50 to-gray-50 py-12 sm:py-20 overflow-hidden">
@@ -29,7 +58,6 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
             <NavLink to="/match" className="group relative bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer">
                <div className="absolute top-0 right-0 w-32 h-32 bg-red-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
                <div className="relative z-10">
@@ -41,7 +69,6 @@ const Home = () => {
                </div>
             </NavLink>
 
-            {/* Feature 2 */}
             <NavLink to="/lost-found" className="group relative bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer">
                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
                <div className="relative z-10">
@@ -53,7 +80,6 @@ const Home = () => {
                </div>
             </NavLink>
 
-            {/* Feature 3 */}
             <NavLink to="/adoption" className="group relative bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden cursor-pointer">
                <div className="absolute top-0 right-0 w-32 h-32 bg-green-100 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
                <div className="relative z-10">
@@ -75,13 +101,78 @@ const Home = () => {
                     <div className="bg-gray-50 rounded-3xl p-8 border border-gray-200 relative">
                         <div className="absolute top-0 left-0 w-full h-2 bg-primary rounded-t-3xl"></div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Create Pet Profile</h2>
-                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center mb-6 bg-white cursor-pointer hover:bg-gray-50 transition-colors group">
+
+                        {/* Upload area */}
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleFileChange}
+                        />
+
+                        {!preview ? (
+                          <div
+                            onClick={() => fileInputRef.current?.click()}
+                            className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center mb-6 bg-white cursor-pointer hover:bg-gray-50 hover:border-primary transition-colors group"
+                          >
                             <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-                                <Wand2 size={24} />
+                                <Upload size={24} />
                             </div>
-                            <p className="text-sm font-medium text-gray-700">Click to upload photos or drag and drop</p>
-                            <p className="text-xs text-gray-400 mt-1">AI Analysis will auto-tag breed</p>
-                        </div>
+                            <p className="text-sm font-medium text-gray-700">Click to upload a pet photo</p>
+                            <p className="text-xs text-gray-400 mt-1">AI will auto-detect breed, age & features</p>
+                          </div>
+                        ) : (
+                          <div className="rounded-xl overflow-hidden mb-6 border border-gray-200 relative">
+                            <img src={preview} alt="Pet" className="w-full h-56 object-cover" />
+
+                            {analyzing && (
+                              <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center">
+                                <Loader2 className="h-10 w-10 text-primary animate-spin mb-2" />
+                                <p className="text-primary font-bold text-sm">Analyzing with AI...</p>
+                              </div>
+                            )}
+
+                            {result && !analyzing && (
+                              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                                <div className="flex flex-wrap gap-2">
+                                  <span className="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1">
+                                    <Check size={10} /> {result.breed || 'Unknown breed'}
+                                  </span>
+                                  <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+                                    {result.age_group || 'Unknown age'}
+                                  </span>
+                                  <span className="bg-purple-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+                                    {result.size || 'Unknown size'}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+
+                            {error && !analyzing && (
+                              <div className="absolute bottom-0 inset-x-0 bg-red-500/90 p-3 text-white text-xs text-center">
+                                {error}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {(result || error) && !analyzing && (
+                          <button
+                            onClick={() => navigate('/post')}
+                            className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-bold py-3 px-6 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5"
+                          >
+                            Continue to Create Profile <ArrowRight size={18} />
+                          </button>
+                        )}
+
+                        {!preview && !result && (
+                          <div className="flex flex-wrap gap-2">
+                            <span className="bg-gray-200 text-gray-500 px-3 py-1 rounded-full text-xs">Breed Detection</span>
+                            <span className="bg-gray-200 text-gray-500 px-3 py-1 rounded-full text-xs">Age Estimation</span>
+                            <span className="bg-gray-200 text-gray-500 px-3 py-1 rounded-full text-xs">Size Classification</span>
+                          </div>
+                        )}
                     </div>
                 </div>
                 <div className="w-full lg:w-1/2">
@@ -122,8 +213,6 @@ const Home = () => {
             </div>
         </div>
       </section>
-
-
     </div>
   );
 };
