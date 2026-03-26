@@ -58,6 +58,17 @@ class Database:
         schema = """
             CREATE TABLE IF NOT EXISTS pets (
                 id TEXT PRIMARY KEY,
+                user_id TEXT,
+                name TEXT,
+                breed TEXT,
+                size TEXT,
+                gender TEXT,
+                age INTEGER,
+                vaccinated INTEGER DEFAULT 0,
+                neutered INTEGER DEFAULT 0,
+                personality_tags TEXT,
+                photos TEXT,
+                bio TEXT,
                 aitags TEXT,
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -114,6 +125,28 @@ class Database:
             Path(self._sqlite_path).parent.mkdir(parents=True, exist_ok=True)
             with self.connection() as conn:
                 conn.executescript(sqlite_schema)
+        self._migrate_pets()
+
+    def _migrate_pets(self) -> None:
+        new_cols = [
+            ("user_id", "TEXT"),
+            ("name", "TEXT"),
+            ("breed", "TEXT"),
+            ("size", "TEXT"),
+            ("gender", "TEXT"),
+            ("age", "INTEGER"),
+            ("vaccinated", "INTEGER DEFAULT 0"),
+            ("neutered", "INTEGER DEFAULT 0"),
+            ("personality_tags", "TEXT"),
+            ("photos", "TEXT"),
+            ("bio", "TEXT"),
+        ]
+        for col, col_type in new_cols:
+            try:
+                with self.connection() as conn:
+                    conn.execute(f"ALTER TABLE pets ADD COLUMN {col} {col_type}")
+            except Exception:
+                pass
 
     @contextmanager
     def connection(self) -> Iterator[_ConnectionWrapper]:

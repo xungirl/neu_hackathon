@@ -17,6 +17,17 @@ class SQLiteDatabase:
                 """
                 CREATE TABLE IF NOT EXISTS pets (
                     id TEXT PRIMARY KEY,
+                    user_id TEXT,
+                    name TEXT,
+                    breed TEXT,
+                    size TEXT,
+                    gender TEXT,
+                    age INTEGER,
+                    vaccinated INTEGER DEFAULT 0,
+                    neutered INTEGER DEFAULT 0,
+                    personality_tags TEXT,
+                    photos TEXT,
+                    bio TEXT,
                     aitags TEXT,
                     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -62,6 +73,28 @@ class SQLiteDatabase:
                 );
                 """
             )
+        self._migrate()
+
+    def _migrate(self) -> None:
+        new_cols = [
+            ("user_id", "TEXT"),
+            ("name", "TEXT"),
+            ("breed", "TEXT"),
+            ("size", "TEXT"),
+            ("gender", "TEXT"),
+            ("age", "INTEGER"),
+            ("vaccinated", "INTEGER DEFAULT 0"),
+            ("neutered", "INTEGER DEFAULT 0"),
+            ("personality_tags", "TEXT"),
+            ("photos", "TEXT"),
+            ("bio", "TEXT"),
+        ]
+        with self.connection() as conn:
+            for col, col_type in new_cols:
+                try:
+                    conn.execute(f"ALTER TABLE pets ADD COLUMN {col} {col_type}")
+                except Exception:
+                    pass
 
     @contextmanager
     def connection(self) -> Iterator[sqlite3.Connection]:
