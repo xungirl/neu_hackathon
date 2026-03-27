@@ -60,9 +60,10 @@ def list_pets(
             "SELECT * FROM pets WHERE name IS NOT NULL ORDER BY created_at DESC LIMIT ? OFFSET ?",
             (limit, offset),
         ).fetchall()
-        total = conn.execute(
-            "SELECT COUNT(*) FROM pets WHERE name IS NOT NULL"
-        ).fetchone()[0]
+        count_row = conn.execute(
+            "SELECT COUNT(*) AS cnt FROM pets WHERE name IS NOT NULL"
+        ).fetchone()
+        total = count_row["cnt"] if isinstance(count_row, dict) else count_row[0]
     items = [_row_to_dict(r) for r in rows]
     return api_success({"items": items, "total": total, "limit": limit, "offset": offset})
 
