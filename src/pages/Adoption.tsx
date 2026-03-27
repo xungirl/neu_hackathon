@@ -215,7 +215,7 @@ const Adoption = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredPets.map((pet) => (
-            <div key={pet.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full cursor-pointer">
+            <NavLink to={`/adoption/${pet.id}`} key={pet.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full cursor-pointer">
               <div className="relative h-64 overflow-hidden bg-gray-100">
                 {pet.image ? (
                   <img src={pet.image} alt={pet.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
@@ -252,7 +252,7 @@ const Adoption = () => {
                   </span>
                 </div>
               </div>
-            </div>
+            </NavLink>
           ))}
 
           {/* Promo Card */}
