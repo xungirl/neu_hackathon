@@ -304,7 +304,11 @@ uvicorn app.main:app --reload --port 8001
 
 Built with ❤️ at **Seattle Hackathon 2026**.
 
-Inspired by **[Kimberlyn](https://www.linkedin.com/in/manqiu-yang-3b6a46311)** — who taught us that every stray deserves a name, and every name deserves a home. This one's for you, K. 🐾
+Special thanks to **[Kimberlyn](https://www.linkedin.com/in/manqiu-yang-3b6a46311)** for inspiring the idea — her passion for animal welfare is the heart of Goodle.
+
+We're a team of pet lovers who believe technology should make the world better — one paw at a time.
+
+Tech by **[Junkai](https://www.linkedin.com/in/junkaid/)** & **[Jiaju](https://www.linkedin.com/in/xungirl/)**.
 
 ---
 
