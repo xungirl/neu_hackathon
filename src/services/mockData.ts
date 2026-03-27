@@ -402,30 +402,59 @@ export const mockPets: Pet[] = [
 export const mockMapMarkers: MapMarker[] = [
   {
     id: 'm1',
-    lat: 35,
-    lng: 45,
+    lat: 47.6456,
+    lng: -122.3344,
     type: 'lost',
     petName: 'Max',
-    description: 'Lost near Gas Works Park. Wearing red collar.',
+    description: 'Lost near Gas Works Park. Wearing red collar. Very friendly, responds to name.',
     timeAgo: '2h ago',
     image: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'm2',
-    lat: 60,
-    lng: 70,
+    lat: 47.6505,
+    lng: -122.3509,
     type: 'stray',
-    description: 'Spotted running near Aurora Bridge.',
+    description: 'Spotted running near Aurora Bridge. Medium brown dog, no collar.',
     timeAgo: '15m ago',
     image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'm3',
-    lat: 25,
-    lng: 20,
+    lat: 47.6133,
+    lng: -122.3445,
     type: 'stray',
-    description: 'Small kitten hiding under a car in Belltown.',
+    description: 'Small kitten hiding under a car in Belltown. Grey tabby, looks scared.',
     timeAgo: '1d ago',
     image: 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'm4',
+    lat: 47.6280,
+    lng: -122.3218,
+    type: 'lost',
+    petName: 'Bella',
+    description: 'Lost in Capitol Hill near Volunteer Park. White Maltese, wearing pink bow. Please call if seen!',
+    timeAgo: '5h ago',
+    image: 'https://images.unsplash.com/photo-1587015566802-46ad946db660?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'm5',
+    lat: 47.6688,
+    lng: -122.3840,
+    type: 'stray',
+    description: 'Large black dog spotted near Ballard Locks. Appears well-fed, possibly lost.',
+    timeAgo: '30m ago',
+    image: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'm6',
+    lat: 47.6062,
+    lng: -122.3321,
+    type: 'lost',
+    petName: 'Oliver',
+    description: 'Orange tabby cat missing from Pioneer Square area. Indoor cat, very shy. Has microchip.',
+    timeAgo: '1d ago',
+    image: 'https://images.unsplash.com/photo-1495360010541-f48722b34f7d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
   }
 ];
