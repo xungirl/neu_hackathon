@@ -165,8 +165,9 @@ const LostFound = () => {
       {/* Real Map */}
       <MapContainer center={center} zoom={12} className="w-full h-full z-0" zoomControl={false} minZoom={10} maxZoom={18}>
         <TileLayer
-          attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          attribution='&copy; Google Maps'
+          url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+          maxZoom={20}
         />
         <ZoomControl position="bottomright" />
         <FlyTo center={flyTarget} />
