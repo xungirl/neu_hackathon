@@ -5,7 +5,7 @@ export interface Pet {
   age: string; // e.g., "2 yrs", "5 mos"
   gender: 'Male' | 'Female';
   distance: string;
-  distanceKm: number;
+  distanceMi: number;
   size: 'Small' | 'Medium' | 'Large';
   image: string;
   images: string[];

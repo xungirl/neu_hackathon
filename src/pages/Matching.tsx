@@ -33,7 +33,7 @@ const Matching = () => {
   const filteredPets = useMemo(() => {
     return mockPets.filter(p => {
       if (p.gender !== gender) return false;
-      if (p.distanceKm > distance) return false;
+      if (p.distanceMi > distance) return false;
       if (selectedTags.length > 0 && !selectedTags.some(t => p.personality.includes(t))) return false;
       return true;
     });
@@ -55,12 +55,12 @@ const Matching = () => {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium text-gray-700">Maximum Distance</label>
-              <span className="text-sm font-bold text-primary">{distance} km</span>
+              <span className="text-sm font-bold text-primary">{distance} mi</span>
             </div>
             <input type="range" min="1" max="100" value={distance} onChange={e => setDistance(Number(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary" />
             <div className="flex justify-between mt-1 text-xs text-gray-500">
-                <span>1km</span>
-                <span>100km</span>
+                <span>1mi</span>
+                <span>100mi</span>
             </div>
           </div>
           <div className="mb-6">
