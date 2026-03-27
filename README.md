@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="https://img.icons8.com/color/96/paw-print.png" alt="Goodle Logo" width="80" />
+  <img src="docs/logo.svg" alt="Goodle Logo" width="80" />
 </p>
 
 <h1 align="center">Goodle</h1>
 
 <p align="center">
-  <i>Pets are family.</i> 🐾
+  <img src="https://readme-typing-svg.demolab.com?font=Indie+Flower&size=28&pause=1000&color=F97316&center=true&vCenter=true&width=300&lines=Pets+are+family.+%F0%9F%90%BE" alt="Pets are family." />
 </p>
 
 <p align="center">
