@@ -4,6 +4,27 @@ import { Search, ArrowRight, Heart, Loader2 } from 'lucide-react';
 import { petsService } from '../api/services/pets';
 import { mockPets } from '../services/mockData';
 
+const breedFallbackImages: Record<string, string> = {
+  'ragdoll': 'https://images.unsplash.com/photo-1574158622682-e40e69881006?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'cat': 'https://images.unsplash.com/photo-1574158622682-e40e69881006?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'shiba': 'https://images.unsplash.com/photo-1583337130417-13104dec14a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'golden': 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'husky': 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'labrador': 'https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'pug': 'https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'beagle': 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'corgi': 'https://images.unsplash.com/photo-1612536057832-2ff7ead58194?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'default': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+};
+
+const getBreedImage = (breed: string): string => {
+  const lower = breed.toLowerCase();
+  for (const [key, url] of Object.entries(breedFallbackImages)) {
+    if (lower.includes(key)) return url;
+  }
+  return breedFallbackImages['default'];
+};
+
 interface AdoptionPet {
   id: string;
   name: string;
@@ -49,7 +70,7 @@ const Adoption = () => {
           gender: p.gender,
           age: p.age ? `${p.age} yrs` : 'Unknown',
           bio: p.bio,
-          image: p.photos?.[0] || '',
+          image: p.photos?.[0] || getBreedImage(p.breed || ''),
           personality_tags: p.personality_tags || [],
           vaccinated: p.vaccinated,
           neutered: p.neutered,
