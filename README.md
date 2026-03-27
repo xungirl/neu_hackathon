@@ -46,30 +46,15 @@ The idea for Goodle was inspired by **Kimberlyn**, whose passion for animal welf
 
 ## ✨ Features
 
-```mermaid
-mindmap
-  root((Goodle))
-    💘 Pet Matching
-      Swipe Cards
-      Distance / Gender / Personality Filters
-      18+ Profiles in Seattle
-    🏠 Adoption Square
-      Search & Filter
-      Rich Detail Pages
-      Health & Activity Info
-    🗺️ Lost & Found
-      Vector Map WebGL
-      GPS Report + Photo
-      Persistent in PostgreSQL
-    🤖 AI Analysis
-      Gemini Breed Detection
-      Age & Size Estimation
-      Personality Guess
-    🔐 Auth & Contact
-      JWT Email/Password
-      Pre-filled Mailto
-      Mobile Responsive
-```
+> **💘 Pet Matching** — Swipe cards with distance, gender & personality filters across Seattle
+>
+> **🏠 Adoption Square** — Search by breed & age, rich detail pages with health & activity info
+>
+> **🗺️ Lost & Found** — WebGL vector map, GPS reports with photo upload, persistent in PostgreSQL
+>
+> **🤖 AI Analysis** — Gemini detects breed, age, size & personality from a single photo
+>
+> **🔐 Auth** — JWT email/password, required for reports &nbsp;&bull;&nbsp; **📧 Contact** — Pre-filled mailto &nbsp;&bull;&nbsp; **📱 Responsive** — Mobile-first on all pages
 
 ---
 
@@ -137,37 +122,17 @@ graph LR
     style D fill:#9BB5A0,color:#fff
 ```
 
-### Raster vs Vector
+### Raster vs Vector — Why We Switched
 
-```mermaid
-graph LR
-    subgraph "❌ Raster PNG"
-        R1["15-25 KB/tile"]
-        R2["CPU rendering"]
-        R3["Block-by-block load"]
-    end
-    subgraph "✅ Vector PBF"
-        V1["2-5 KB/tile"]
-        V2["WebGL GPU rendering"]
-        V3["60fps silky smooth"]
-    end
-    R1 -.->|5× smaller| V1
-    R2 -.->|hardware accel| V2
-    R3 -.->|no artifacts| V3
+> ❌ **Raster** (PNG tiles): 15-25 KB each, CPU rendered, block-by-block loading
+>
+> ✅ **Vector** (PBF tiles): 2-5 KB each, WebGL GPU rendered, 60fps smooth zoom
 
-    style R1 fill:#C4956A,color:#fff
-    style R2 fill:#C4956A,color:#fff
-    style R3 fill:#C4956A,color:#fff
-    style V1 fill:#9BB5A0,color:#fff
-    style V2 fill:#9BB5A0,color:#fff
-    style V3 fill:#9BB5A0,color:#fff
-```
-
-### 9 Optimizations in 4 Versions
+### 9 Optimizations Across 4 Versions
 
 > `lazy loading` → `preconnect` → `4× parallel CDN` → `canvas GPU` → `idle updates` → `icon cache` → `no animations` → **`vector tiles`** → `skeleton UI`
 
-**Final stack:** MapLibre GL JS + CARTO Voyager vectors + WebGL + Protocol Buffers
+**Final stack:** MapLibre GL JS &bull; CARTO Voyager vectors &bull; WebGL &bull; Protocol Buffers
 
 ---
 
@@ -342,7 +307,7 @@ uvicorn app.main:app --reload --port 8001
 
 Built with ❤️ at **Seattle Hackathon 2026**.
 
-Special thanks to **Kimberlyn** for inspiring the idea — her passion for animal welfare is the heart of Goodle.
+Special thanks to **[Kimberlyn](https://www.linkedin.com/in/manqiu-yang-3b6a46311)** for inspiring the idea — her passion for animal welfare is the heart of Goodle.
 
 We're a team of pet lovers who believe technology should make the world better — one paw at a time.
 
