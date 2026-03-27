@@ -5,16 +5,17 @@ import { petsService } from '../api/services/pets';
 import { mockPets } from '../services/mockData';
 
 const breedFallbackImages: Record<string, string> = {
-  'ragdoll': 'https://images.unsplash.com/photo-1574158622682-e40e69881006?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'cat': 'https://images.unsplash.com/photo-1574158622682-e40e69881006?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'shiba': 'https://images.unsplash.com/photo-1583337130417-13104dec14a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'golden': 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'husky': 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'labrador': 'https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'pug': 'https://images.unsplash.com/photo-1517849845537-4d257902454a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'beagle': 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'corgi': 'https://images.unsplash.com/photo-1612536057832-2ff7ead58194?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  'default': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+  'ragdoll': 'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_1280.jpg',
+  'cat': 'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_1280.jpg',
+  'shiba': 'https://cdn.pixabay.com/photo/2019/07/23/13/51/dog-4357790_1280.jpg',
+  'golden': 'https://cdn.pixabay.com/photo/2018/01/09/11/04/dog-3071334_1280.jpg',
+  'husky': 'https://cdn.pixabay.com/photo/2016/02/19/15/46/dog-1210559_1280.jpg',
+  'labrador': 'https://cdn.pixabay.com/photo/2016/12/13/05/15/puppy-1903313_1280.jpg',
+  'pug': 'https://cdn.pixabay.com/photo/2015/03/26/09/47/pug-690566_1280.jpg',
+  'beagle': 'https://cdn.pixabay.com/photo/2015/06/08/15/02/dog-801971_1280.jpg',
+  'corgi': 'https://cdn.pixabay.com/photo/2019/08/19/07/45/corgi-4415649_1280.jpg',
+  'bulldog': 'https://cdn.pixabay.com/photo/2015/11/17/13/13/bulldog-1047518_1280.jpg',
+  'default': 'https://cdn.pixabay.com/photo/2016/02/19/15/46/dog-1210559_1280.jpg',
 };
 
 const getBreedImage = (breed: string): string => {
