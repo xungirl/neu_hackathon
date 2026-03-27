@@ -4,6 +4,12 @@ import shibaImg from '../assets/pets/shiba.avif';
 import pomeranianImg from '../assets/pets/pomeranian.webp';
 import malteseImg from '../assets/pets/maltese.jpeg';
 import jackRussellImg from '../assets/pets/jack-russell.jpeg';
+import chihuahuaWhiteImg from '../assets/pets/chihuahua-white.jpg';
+import labBrownImg from '../assets/pets/lab-brown-puppy.jpg';
+import labBlackImg from '../assets/pets/lab-black-puppy.jpg';
+import bichonImg from '../assets/pets/bichon.jpg';
+import yorkieImg from '../assets/pets/yorkie.jpg';
+import chihuahuaTanImg from '../assets/pets/chihuahua-tan.jpg';
 
 export const mockPets: Pet[] = [
   {
@@ -258,6 +264,138 @@ export const mockPets: Pet[] = [
     activityLevel: 98,
     sociability: 82,
     health: { vaccinated: true, neutered: false, dewormed: true }
+  },
+  {
+    id: '13',
+    name: 'Peanut',
+    breed: 'Chihuahua',
+    age: '3 yrs',
+    gender: 'Male',
+    distance: '7 mi',
+    distanceMi: 7,
+    size: 'Small',
+    image: chihuahuaWhiteImg,
+    images: [chihuahuaWhiteImg],
+    tags: ['Fearless', 'Harness Lover', 'Compact'],
+    personality: ['Calm', 'Friendly'],
+    description: 'Peanut may be small but he has the confidence of a Great Dane. He loves strutting around Green Lake in his black harness and supervising everyone at the dog park.',
+    location: 'Green Lake, Seattle',
+    ownerName: 'Maria Lopez',
+    ownerImage: 'https://i.pravatar.cc/150?u=maria',
+    status: 'Available',
+    activityLevel: 35,
+    sociability: 50,
+    health: { vaccinated: true, neutered: true, dewormed: true }
+  },
+  {
+    id: '14',
+    name: 'Cocoa',
+    breed: 'Chocolate Lab',
+    age: '4 mos',
+    gender: 'Male',
+    distance: '20 mi',
+    distanceMi: 20,
+    size: 'Large',
+    image: labBrownImg,
+    images: [labBrownImg],
+    tags: ['Puppy', 'Smiley', 'Mouthy'],
+    personality: ['Playful', 'Energetic', 'Friendly'],
+    description: 'Cocoa is a happy-go-lucky chocolate Lab puppy with the biggest smile in the Pacific Northwest. He loves splashing in puddles at Marymoor Park and chewing on everything he finds.',
+    location: 'Issaquah, WA',
+    ownerName: 'Tom Baker',
+    ownerImage: 'https://i.pravatar.cc/150?u=tom',
+    status: 'Available',
+    activityLevel: 85,
+    sociability: 95,
+    health: { vaccinated: true, neutered: false, dewormed: true }
+  },
+  {
+    id: '15',
+    name: 'Shadow',
+    breed: 'Black Labrador',
+    age: '3 mos',
+    gender: 'Male',
+    distance: '55 mi',
+    distanceMi: 55,
+    size: 'Large',
+    image: labBlackImg,
+    images: [labBlackImg],
+    tags: ['Puppy', 'Runner', 'Teal Collar'],
+    personality: ['Playful', 'Energetic'],
+    description: 'Shadow is a bold little black Lab puppy who already loves running laps around the yard. Born near the foothills of the Cascades, he is destined for trail adventures and lake swims.',
+    location: 'Ellensburg, WA',
+    ownerName: 'Chris Palmer',
+    ownerImage: 'https://i.pravatar.cc/150?u=chris',
+    status: 'Available',
+    activityLevel: 92,
+    sociability: 78,
+    health: { vaccinated: true, neutered: false, dewormed: false }
+  },
+  {
+    id: '16',
+    name: 'Biscuit',
+    breed: 'Bichon Frise',
+    age: '2 yrs',
+    gender: 'Male',
+    distance: '11 mi',
+    distanceMi: 11,
+    size: 'Small',
+    image: bichonImg,
+    images: [bichonImg],
+    tags: ['Happy', 'Hypoallergenic', 'Fluffy Cloud'],
+    personality: ['Playful', 'Friendly'],
+    description: 'Biscuit is the happiest dog you will ever meet — that tongue is always out and that tail is always wagging. Great for allergy sufferers and perfect for apartment life in the city.',
+    location: 'Mercer Island, WA',
+    ownerName: 'Rachel Kim',
+    ownerImage: 'https://i.pravatar.cc/150?u=rachel',
+    status: 'Available',
+    activityLevel: 45,
+    sociability: 96,
+    health: { vaccinated: true, neutered: true, dewormed: true }
+  },
+  {
+    id: '17',
+    name: 'Ginger',
+    breed: 'Yorkshire Terrier',
+    age: '4 yrs',
+    gender: 'Female',
+    distance: '14 mi',
+    distanceMi: 14,
+    size: 'Small',
+    image: yorkieImg,
+    images: [yorkieImg],
+    tags: ['Glamorous', 'Sunset Queen', 'Brave'],
+    personality: ['Playful', 'Energetic'],
+    description: 'Ginger is a feisty little Yorkie who loves golden hour photo sessions at Discovery Park. Do not let her size fool you — she will chase any dog twice her size and look fabulous doing it.',
+    location: 'Magnolia, Seattle',
+    ownerName: 'Sophie Wright',
+    ownerImage: 'https://i.pravatar.cc/150?u=sophie',
+    status: 'Available',
+    activityLevel: 65,
+    sociability: 72,
+    health: { vaccinated: true, neutered: true, dewormed: true }
+  },
+  {
+    id: '18',
+    name: 'Pepper',
+    breed: 'Chihuahua',
+    age: '5 yrs',
+    gender: 'Female',
+    distance: '3 mi',
+    distanceMi: 3,
+    size: 'Small',
+    image: chihuahuaTanImg,
+    images: [chihuahuaTanImg],
+    tags: ['Sassy', 'Pink Harness', 'Loyal'],
+    personality: ['Calm', 'Friendly'],
+    description: 'Pepper is a spicy little Chihuahua with attitude to spare. She is fiercely loyal to her owner and loves warm laps, sunny patios in Ballard, and giving strangers the stink eye.',
+    location: 'Ballard, Seattle',
+    ownerName: 'Nina Hernandez',
+    ownerImage: 'https://i.pravatar.cc/150?u=nina',
+    status: 'Available',
+    activityLevel: 30,
+    sociability: 40,
+    health: { vaccinated: true, neutered: true, dewormed: true }
   }
 ];
 
