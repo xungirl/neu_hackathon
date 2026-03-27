@@ -4,6 +4,7 @@ import { mockPets } from '../services/mockData';
 
 const Matching = () => {
   const [currentPetIndex, setCurrentPetIndex] = useState(0);
+  const [gender, setGender] = useState<'Male' | 'Female'>('Female');
   const pet = mockPets[currentPetIndex % mockPets.length];
 
   const handleNext = () => {
@@ -31,8 +32,8 @@ const Matching = () => {
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
             <div className="flex gap-2">
-                <button className="flex-1 py-2 rounded-xl border border-gray-200 text-gray-600 hover:border-primary hover:text-primary transition-colors text-sm font-semibold">Male</button>
-                <button className="flex-1 py-2 rounded-xl border-2 border-primary bg-primary/10 text-primary text-sm font-bold">Female</button>
+                <button onClick={() => setGender('Male')} className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-colors ${gender === 'Male' ? 'border-2 border-primary bg-primary/10 text-primary font-bold' : 'border border-gray-200 text-gray-600 hover:border-primary hover:text-primary'}`}>Male</button>
+                <button onClick={() => setGender('Female')} className={`flex-1 py-2 rounded-xl text-sm font-semibold transition-colors ${gender === 'Female' ? 'border-2 border-primary bg-primary/10 text-primary font-bold' : 'border border-gray-200 text-gray-600 hover:border-primary hover:text-primary'}`}>Female</button>
             </div>
           </div>
           <div className="mb-6">
