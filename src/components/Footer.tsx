@@ -7,7 +7,7 @@ const Footer = () => {
         <p className="text-2xl text-primary" style={{ fontFamily: "'Indie Flower', cursive" }}>
           Pets are family.
         </p>
-        <p className="text-xs text-gray-400">© 2025 Goodle Inc. All rights reserved.</p>
+        <p className="text-xs text-gray-400">© 2026 Goodle Inc.</p>
       </div>
     </footer>
   );
