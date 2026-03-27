@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="docs/logo.svg" alt="Goodle Logo" width="80" />
+  <img src="docs/logo.png" alt="Goodle Logo" width="240" />
 </p>
-
-<h1 align="center">Goodle</h1>
 
 <p align="center">
   <img src="https://readme-typing-svg.demolab.com?font=Indie+Flower&size=28&pause=1000&color=C4956A&center=true&vCenter=true&width=300&lines=Pets+are+family.+%F0%9F%90%BE" alt="Pets are family." />
