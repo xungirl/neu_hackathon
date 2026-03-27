@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, AlertCircle, X, ChevronRight, MapPin, Clock, Navigation } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, ZoomControl } from 'react-leaflet';
+import { Search, AlertCircle, X, ChevronRight, MapPin, Clock, Navigation, Camera } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, ZoomControl, ScaleControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { mockMapMarkers } from '../services/mockData';
 import LostPetMatcher from '../components/ai/LostPetMatcher';
 import { MatchLostDogResult } from '../types/ai';
 
-// Fix leaflet default icon issue
+// Fix leaflet default icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
@@ -15,63 +15,50 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-const createMarkerIcon = (type: 'lost' | 'stray', image: string) => {
-  return L.divIcon({
-    className: 'custom-marker',
-    html: `
-      <div style="position:relative;width:44px;height:44px;">
-        <div style="position:absolute;inset:-6px;border-radius:50%;background:${type === 'lost' ? 'rgba(59,130,246,0.3)' : 'rgba(249,115,22,0.3)'};animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
-        <div style="width:44px;height:44px;border-radius:50%;border:3px solid ${type === 'lost' ? '#3B82F6' : '#F97316'};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3);background:#fff;">
-          <img src="${image}" style="width:100%;height:100%;object-fit:cover;" />
-        </div>
-      </div>
-    `,
-    iconSize: [44, 44],
-    iconAnchor: [22, 22],
-    popupAnchor: [0, -26],
-  });
-};
+const createMarkerIcon = (type: 'lost' | 'stray', image: string) => L.divIcon({
+  className: 'custom-marker',
+  html: `<div style="position:relative;width:44px;height:44px;">
+    <div style="position:absolute;inset:-6px;border-radius:50%;background:${type === 'lost' ? 'rgba(59,130,246,0.3)' : 'rgba(249,115,22,0.3)'};animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
+    <div style="width:44px;height:44px;border-radius:50%;border:3px solid ${type === 'lost' ? '#3B82F6' : '#F97316'};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3);background:#fff;">
+      <img src="${image}" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+    </div>
+  </div>`,
+  iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -26],
+});
 
 const newReportIcon = L.divIcon({
   className: 'custom-marker',
-  html: `
-    <div style="width:32px;height:32px;border-radius:50%;background:#EF4444;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </div>
-  `,
-  iconSize: [32, 32],
-  iconAnchor: [16, 16],
+  html: `<div style="width:32px;height:32px;border-radius:50%;background:#EF4444;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </div>`,
+  iconSize: [32, 32], iconAnchor: [16, 16],
 });
 
-// Component to fly to location
 const FlyTo = ({ center }: { center: [number, number] | null }) => {
   const map = useMap();
-  useEffect(() => {
-    if (center) map.flyTo(center, 15, { duration: 1 });
-  }, [center]);
+  useEffect(() => { if (center) map.flyTo(center, 15, { duration: 1 }); }, [center]);
   return null;
 };
 
-// Component to handle map clicks for report
 const MapClickHandler = ({ onMapClick, active }: { onMapClick: (lat: number, lng: number) => void; active: boolean }) => {
-  useMapEvents({
-    click(e) {
-      if (active) onMapClick(e.latlng.lat, e.latlng.lng);
-    },
-  });
+  useMapEvents({ click(e) { if (active) onMapClick(e.latlng.lat, e.latlng.lng); } });
   return null;
 };
 
 interface ReportData {
-  lat: number;
-  lng: number;
+  lat: number; lng: number;
   type: 'lost' | 'stray';
-  petName: string;
-  description: string;
+  petName: string; description: string;
+  color: string; size: string;
+  photoPreview: string;
 }
 
+const defaultReport: ReportData = { lat: 0, lng: 0, type: 'lost', petName: '', description: '', color: '', size: '', photoPreview: '' };
+
+const COLOR_OPTIONS = ['White', 'Black', 'Brown', 'Golden', 'Gray', 'Mixed'];
+const SIZE_OPTIONS = ['Small', 'Medium', 'Large'];
+
 const LostFound = () => {
-  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
   const [showMatcher, setShowMatcher] = useState(false);
   const [matchResult, setMatchResult] = useState<MatchLostDogResult | null>(null);
   const [showStray, setShowStray] = useState(true);
@@ -79,13 +66,14 @@ const LostFound = () => {
   const [flyTarget, setFlyTarget] = useState<[number, number] | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Report state
   const [reporting, setReporting] = useState(false);
   const [reportStep, setReportStep] = useState<'locate' | 'form'>('locate');
   const [reportPin, setReportPin] = useState<{ lat: number; lng: number } | null>(null);
-  const [reportData, setReportData] = useState<ReportData>({ lat: 0, lng: 0, type: 'lost', petName: '', description: '' });
-  const [userReports, setUserReports] = useState<(ReportData & { id: string; timeAgo: string; image: string })[]>([]);
+  const [reportData, setReportData] = useState<ReportData>(defaultReport);
+  const [userReports, setUserReports] = useState<(ReportData & { id: string; timeAgo: string })[]>([]);
   const [locating, setLocating] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const filteredMarkers = mockMapMarkers.filter(m => {
     if (m.type === 'stray' && !showStray) return false;
@@ -97,16 +85,9 @@ const LostFound = () => {
     return true;
   });
 
-  const handleMatchFound = (result: MatchLostDogResult) => {
-    setMatchResult(result);
-    setShowMatcher(false);
-  };
+  const handleMatchFound = (result: MatchLostDogResult) => { setMatchResult(result); setShowMatcher(false); };
 
-  const startReport = () => {
-    setReporting(true);
-    setReportStep('locate');
-    setReportPin(null);
-  };
+  const startReport = () => { setReporting(true); setReportStep('locate'); setReportPin(null); setSubmitted(false); };
 
   const useMyLocation = () => {
     setLocating(true);
@@ -119,10 +100,7 @@ const LostFound = () => {
         setReportData(prev => ({ ...prev, lat: latitude, lng: longitude }));
         setLocating(false);
       },
-      () => {
-        alert('Could not get your location. Please click on the map instead.');
-        setLocating(false);
-      },
+      () => { alert('Could not get your location. Please click on the map instead.'); setLocating(false); },
       { enableHighAccuracy: true }
     );
   };
@@ -135,55 +113,61 @@ const LostFound = () => {
     }
   };
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setReportData(prev => ({ ...prev, photoPreview: url }));
+    }
+  };
+
   const submitReport = () => {
     const newReport = {
       ...reportData,
       id: `user-${Date.now()}`,
       timeAgo: 'Just now',
-      image: reportData.type === 'lost'
-        ? 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-        : 'https://images.unsplash.com/photo-1561037404-61cd46aa615b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     };
     setUserReports(prev => [...prev, newReport]);
-    setReporting(false);
-    setReportPin(null);
-    setReportStep('locate');
-    setReportData({ lat: 0, lng: 0, type: 'lost', petName: '', description: '' });
+    setSubmitted(true);
+    setTimeout(() => {
+      setReporting(false);
+      setReportPin(null);
+      setReportStep('locate');
+      setReportData(defaultReport);
+      setSubmitted(false);
+    }, 2000);
   };
 
-  const cancelReport = () => {
-    setReporting(false);
-    setReportPin(null);
-    setReportStep('locate');
-  };
+  const cancelReport = () => { setReporting(false); setReportPin(null); setReportStep('locate'); setReportData(defaultReport); };
 
-  // Seattle center
   const center: [number, number] = [47.6362, -122.3321];
 
   return (
     <div className="flex-1 relative overflow-hidden h-[calc(100vh-64px)]">
-      {/* Real Map */}
-      <MapContainer center={center} zoom={12} className="w-full h-full z-0" zoomControl={false} minZoom={10} maxZoom={18}>
+      <MapContainer
+        center={center}
+        zoom={13}
+        className="w-full h-full z-0"
+        zoomControl={false}
+        minZoom={10}
+        maxZoom={18}
+        preferCanvas={true}
+      >
         <TileLayer
-          attribution='&copy; Google Maps'
-          url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           maxZoom={20}
         />
         <ZoomControl position="bottomright" />
+        <ScaleControl position="bottomleft" imperial={true} metric={true} />
         <FlyTo center={flyTarget} />
         <MapClickHandler onMapClick={handleMapClick} active={reporting && reportStep === 'locate'} />
 
-        {/* Mock markers */}
         {filteredMarkers.map(marker => (
-          <Marker
-            key={marker.id}
-            position={[marker.lat, marker.lng]}
-            icon={createMarkerIcon(marker.type, marker.image)}
-            eventHandlers={{ click: () => setSelectedMarker(marker.id) }}
-          >
+          <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={createMarkerIcon(marker.type, marker.image)}>
             <Popup>
               <div className="w-56">
-                <img src={marker.image} alt={marker.petName || 'Pet'} className="w-full h-32 object-cover rounded-lg mb-2" />
+                <img src={marker.image} alt={marker.petName || 'Pet'} className="w-full h-32 object-cover rounded-lg mb-2" loading="lazy" />
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${marker.type === 'lost' ? 'bg-blue-500' : 'bg-orange-500'}`}>
                     {marker.type === 'lost' ? 'Lost' : 'Stray'}
@@ -200,15 +184,15 @@ const LostFound = () => {
           </Marker>
         ))}
 
-        {/* User-submitted reports */}
         {userReports.map(report => (
           <Marker
             key={report.id}
             position={[report.lat, report.lng]}
-            icon={createMarkerIcon(report.type, report.image)}
+            icon={createMarkerIcon(report.type, report.photoPreview || 'https://cdn.pixabay.com/photo/2016/02/19/15/46/dog-1210559_640.jpg')}
           >
             <Popup>
               <div className="w-56">
+                {report.photoPreview && <img src={report.photoPreview} alt="Report" className="w-full h-32 object-cover rounded-lg mb-2" />}
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${report.type === 'lost' ? 'bg-blue-500' : 'bg-orange-500'}`}>
                     {report.type === 'lost' ? 'Lost' : 'Stray'}
@@ -217,12 +201,15 @@ const LostFound = () => {
                 </div>
                 <h3 className="font-bold text-gray-900 text-sm">{report.petName || 'Stray sighting'}</h3>
                 <p className="text-xs text-gray-600 mt-1">{report.description}</p>
+                <div className="flex gap-1 mt-1">
+                  {report.color && <span className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded">{report.color}</span>}
+                  {report.size && <span className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded">{report.size}</span>}
+                </div>
               </div>
             </Popup>
           </Marker>
         ))}
 
-        {/* Report pin */}
         {reportPin && (
           <Marker position={[reportPin.lat, reportPin.lng]} icon={newReportIcon}>
             <Popup>New report location</Popup>
@@ -231,117 +218,152 @@ const LostFound = () => {
       </MapContainer>
 
       {/* Left Panel */}
-      <div className="absolute top-6 left-6 z-[1000] w-80 max-w-[calc(100vw-3rem)] pointer-events-none">
-        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-gray-200 p-4 space-y-4 pointer-events-auto">
+      <div className="absolute top-4 left-4 z-[1000] w-80 max-w-[calc(100vw-2rem)] pointer-events-none">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-gray-200 p-4 space-y-4 pointer-events-auto max-h-[calc(100vh-120px)] overflow-y-auto hide-scrollbar">
           {!reporting && !matchResult ? (
             <>
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search location or breed..."
-                  className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary" />
               </div>
-
-              <div className="pt-2 border-t border-gray-100">
-                <button
-                  onClick={() => setShowMatcher(true)}
-                  className="w-full bg-orange-50 text-orange-600 hover:bg-orange-100 border border-orange-200 rounded-lg py-3 px-4 flex items-center justify-center gap-2 font-medium transition-colors"
-                >
-                  <Search size={18} /> Find by Photo (AI)
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Show On Map</label>
-                <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-lg hover:bg-gray-50">
-                  <input type="checkbox" checked={showStray} onChange={() => setShowStray(!showStray)} className="text-primary rounded border-gray-300 focus:ring-primary h-4 w-4" />
-                  <div className="flex items-center space-x-2">
-                    <span className="w-3 h-3 bg-primary rounded-full"></span>
-                    <span className="text-sm font-medium text-gray-700">Stray Reports</span>
-                  </div>
+              <button onClick={() => setShowMatcher(true)}
+                className="w-full bg-orange-50 text-orange-600 hover:bg-orange-100 border border-orange-200 rounded-lg py-2.5 px-4 flex items-center justify-center gap-2 font-medium text-sm transition-colors">
+                <Search size={16} /> Find by Photo (AI)
+              </button>
+              <div className="space-y-1 pt-2 border-t border-gray-100">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Show On Map</label>
+                <label className="flex items-center space-x-3 cursor-pointer p-1.5 rounded-lg hover:bg-gray-50">
+                  <input type="checkbox" checked={showStray} onChange={() => setShowStray(!showStray)} className="rounded border-gray-300 h-3.5 w-3.5 accent-orange-500" />
+                  <span className="w-2.5 h-2.5 bg-primary rounded-full"></span>
+                  <span className="text-sm text-gray-700">Stray Reports</span>
                 </label>
-                <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-lg hover:bg-gray-50">
-                  <input type="checkbox" checked={showLost} onChange={() => setShowLost(!showLost)} className="text-secondary rounded border-gray-300 focus:ring-secondary h-4 w-4" />
-                  <div className="flex items-center space-x-2">
-                    <span className="w-3 h-3 bg-secondary rounded-full"></span>
-                    <span className="text-sm font-medium text-gray-700">Lost Pet Announcements</span>
-                  </div>
+                <label className="flex items-center space-x-3 cursor-pointer p-1.5 rounded-lg hover:bg-gray-50">
+                  <input type="checkbox" checked={showLost} onChange={() => setShowLost(!showLost)} className="rounded border-gray-300 h-3.5 w-3.5 accent-blue-500" />
+                  <span className="w-2.5 h-2.5 bg-secondary rounded-full"></span>
+                  <span className="text-sm text-gray-700">Lost Pets</span>
                 </label>
               </div>
-
-              <div className="text-xs text-gray-400 text-center pt-2 border-t border-gray-100">
-                {filteredMarkers.length + userReports.length} reports on map
-              </div>
+              <p className="text-[10px] text-gray-400 text-center">{filteredMarkers.length + userReports.length} reports on map</p>
             </>
           ) : reporting ? (
             <div>
               <div className="flex justify-between items-center mb-3">
-                <h3 className="font-bold text-gray-900">New Report</h3>
-                <button onClick={cancelReport} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+                <h3 className="font-bold text-gray-900 text-sm">{submitted ? 'Report Submitted!' : reportStep === 'locate' ? 'Pin Location' : 'Report Details'}</h3>
+                {!submitted && <button onClick={cancelReport} className="text-gray-400 hover:text-gray-600"><X size={16} /></button>}
               </div>
 
-              {reportStep === 'locate' ? (
+              {submitted ? (
+                <div className="text-center py-6">
+                  <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  </div>
+                  <p className="text-sm text-gray-600">Thank you! Your report has been posted on the map.</p>
+                </div>
+              ) : reportStep === 'locate' ? (
                 <div className="space-y-3">
-                  <p className="text-sm text-gray-600">Choose the location where you saw the pet:</p>
-                  <button
-                    onClick={useMyLocation}
-                    disabled={locating}
-                    className="w-full bg-primary text-white rounded-lg py-3 flex items-center justify-center gap-2 font-medium hover:bg-orange-600 transition-colors disabled:opacity-50"
-                  >
-                    <Navigation size={18} />
-                    {locating ? 'Getting location...' : 'Use My Location'}
+                  <p className="text-xs text-gray-500">Choose where you saw the pet:</p>
+                  <button onClick={useMyLocation} disabled={locating}
+                    className="w-full bg-primary text-white rounded-lg py-2.5 flex items-center justify-center gap-2 font-medium text-sm hover:bg-orange-600 transition-colors disabled:opacity-50">
+                    <Navigation size={16} />
+                    {locating ? 'Getting location...' : 'Use My Current Location'}
                   </button>
-                  <p className="text-xs text-gray-400 text-center">or click anywhere on the map</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-px bg-gray-200"></div>
+                    <span className="text-[10px] text-gray-400">or</span>
+                    <div className="flex-1 h-px bg-gray-200"></div>
+                  </div>
+                  <p className="text-xs text-gray-400 text-center">Tap anywhere on the map</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-2 flex items-center gap-2 text-sm text-green-700">
-                    <MapPin size={16} />
-                    Location set ({reportData.lat.toFixed(4)}, {reportData.lng.toFixed(4)})
+                  {/* Location confirmed */}
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-2 flex items-center gap-2 text-xs text-green-700">
+                    <MapPin size={14} /> Location pinned
                   </div>
+
+                  {/* Photo upload */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Report Type</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Photo <span className="text-gray-400">(optional)</span></label>
+                    <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+                    {reportData.photoPreview ? (
+                      <div className="relative rounded-lg overflow-hidden h-28">
+                        <img src={reportData.photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                        <button onClick={() => setReportData(p => ({ ...p, photoPreview: '' }))}
+                          className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5"><X size={14} /></button>
+                      </div>
+                    ) : (
+                      <button onClick={() => photoInputRef.current?.click()}
+                        className="w-full border-2 border-dashed border-gray-200 rounded-lg py-4 flex flex-col items-center gap-1 hover:border-primary hover:bg-orange-50/50 transition-colors">
+                        <Camera size={20} className="text-gray-400" />
+                        <span className="text-xs text-gray-500">Upload photo</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Report type */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Report Type <span className="text-red-500">*</span></label>
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => setReportData(p => ({ ...p, type: 'lost' }))}
-                        className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${reportData.type === 'lost' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'}`}
-                      >Lost Pet</button>
-                      <button
-                        onClick={() => setReportData(p => ({ ...p, type: 'stray' }))}
-                        className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${reportData.type === 'stray' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600'}`}
-                      >Stray Sighting</button>
+                      <button onClick={() => setReportData(p => ({ ...p, type: 'lost' }))}
+                        className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${reportData.type === 'lost' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                        Lost Pet
+                      </button>
+                      <button onClick={() => setReportData(p => ({ ...p, type: 'stray' }))}
+                        className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${reportData.type === 'stray' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                        Stray Sighting
+                      </button>
                     </div>
                   </div>
+
+                  {/* Pet name (for lost) */}
                   {reportData.type === 'lost' && (
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">Pet Name</label>
-                      <input
-                        value={reportData.petName}
-                        onChange={e => setReportData(p => ({ ...p, petName: e.target.value }))}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                        placeholder="e.g. Buddy"
-                      />
+                      <input value={reportData.petName} onChange={e => setReportData(p => ({ ...p, petName: e.target.value }))}
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="e.g. Buddy" />
                     </div>
                   )}
+
+                  {/* Description */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
-                    <textarea
-                      value={reportData.description}
-                      onChange={e => setReportData(p => ({ ...p, description: e.target.value }))}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary h-20 resize-none"
-                      placeholder="Describe the pet, breed, color, collar..."
-                    />
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Description <span className="text-red-500">*</span></label>
+                    <textarea value={reportData.description} onChange={e => setReportData(p => ({ ...p, description: e.target.value }))}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary h-16 resize-none"
+                      placeholder="Breed, color, collar, behavior..." />
                   </div>
-                  <button
-                    onClick={submitReport}
-                    disabled={!reportData.description}
-                    className="w-full bg-primary text-white rounded-lg py-3 font-bold hover:bg-orange-600 transition-colors disabled:opacity-50"
-                  >
-                    Submit Report
+
+                  {/* Color - optional */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Color <span className="text-gray-400">(optional)</span></label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {COLOR_OPTIONS.map(c => (
+                        <button key={c} onClick={() => setReportData(p => ({ ...p, color: p.color === c ? '' : c }))}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${reportData.color === c ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Size - optional */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Size <span className="text-gray-400">(optional)</span></label>
+                    <div className="flex gap-2">
+                      {SIZE_OPTIONS.map(s => (
+                        <button key={s} onClick={() => setReportData(p => ({ ...p, size: p.size === s ? '' : s }))}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${reportData.size === s ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Submit */}
+                  <button onClick={submitReport} disabled={!reportData.description}
+                    className="w-full bg-red-500 text-white rounded-lg py-2.5 font-bold text-sm hover:bg-red-600 transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
+                    <AlertCircle size={16} /> Submit Report
                   </button>
                 </div>
               )}
@@ -349,37 +371,34 @@ const LostFound = () => {
           ) : matchResult ? (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-gray-900">AI Search Results</h3>
-                <button onClick={() => setMatchResult(null)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+                <h3 className="font-bold text-gray-900 text-sm">AI Search Results</h3>
+                <button onClick={() => setMatchResult(null)} className="text-gray-400 hover:text-gray-600"><X size={16} /></button>
               </div>
               <div className="bg-orange-50 border border-orange-100 rounded-lg p-3 mb-4">
-                <div className="flex items-center gap-2 text-orange-800 font-medium mb-1">
-                  <Search size={16} />
+                <div className="flex items-center gap-2 text-orange-800 font-medium text-sm mb-1">
+                  <Search size={14} />
                   {matchResult.is_match ? 'Potential Match Found!' : 'No High Confidence Match'}
                 </div>
-                <p className="text-xs text-orange-700">
-                  Similarity Score: {(matchResult.similarity_score * 100).toFixed(1)}%
-                </p>
+                <p className="text-xs text-orange-700">Similarity: {(matchResult.similarity_score * 100).toFixed(1)}%</p>
               </div>
               {matchResult.matched_report_ids.length > 0 ? (
-                <div className="space-y-3">
-                  <p className="text-xs text-gray-500 font-medium uppercase">Matched Reports</p>
+                <div className="space-y-2">
                   {matchResult.matched_report_ids.map(id => (
                     <div key={id} className="bg-white border border-gray-200 rounded-lg p-2 flex gap-3 hover:border-primary cursor-pointer transition-colors">
-                      <div className="w-12 h-12 bg-gray-200 rounded-md flex-shrink-0 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1544175287-e467232a3f14?auto=format&fit=crop&q=80&w=150" alt="Match" className="w-full h-full object-cover" />
+                      <div className="w-10 h-10 bg-gray-200 rounded overflow-hidden flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1544175287-e467232a3f14?auto=format&fit=crop&q=80&w=100" alt="Match" className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">Report #{id.substring(0, 8)}</p>
-                        <p className="text-xs text-gray-500">Nearby - 2h ago</p>
+                        <p className="text-xs font-medium text-gray-900 truncate">Report #{id.substring(0, 8)}</p>
+                        <p className="text-[10px] text-gray-500">Nearby - 2h ago</p>
                       </div>
-                      <ChevronRight size={16} className="text-gray-400 self-center" />
+                      <ChevronRight size={14} className="text-gray-400 self-center" />
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500 text-sm">
-                  <p>No matching stray reports found yet.</p>
+                <div className="text-center py-6 text-gray-500 text-xs">
+                  <p>No matching reports found.</p>
                   <button className="mt-2 text-primary hover:underline" onClick={() => setMatchResult(null)}>Try another photo</button>
                 </div>
               )}
@@ -392,31 +411,26 @@ const LostFound = () => {
       {showMatcher && (
         <div className="absolute inset-0 z-[2000] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-lg relative">
-            <button onClick={() => setShowMatcher(false)} className="absolute -top-12 right-0 text-white hover:text-gray-200 transition-colors">
-              <X size={24} />
-            </button>
+            <button onClick={() => setShowMatcher(false)} className="absolute -top-12 right-0 text-white hover:text-gray-200"><X size={24} /></button>
             <LostPetMatcher onMatchFound={handleMatchFound} />
           </div>
         </div>
       )}
 
-      {/* Bottom Right Controls */}
-      <div className="absolute bottom-6 right-6 z-[1000] flex flex-col items-end space-y-4">
-        <button
-          onClick={startReport}
-          className={`group flex items-center space-x-2 ${reporting ? 'bg-gray-500' : 'bg-primary hover:bg-orange-600'} text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200`}
-          disabled={reporting}
-        >
-          <AlertCircle size={20} />
-          <span className="font-bold text-lg">{reporting ? 'Reporting...' : 'Report Now'}</span>
-        </button>
-      </div>
+      {/* Report Now button */}
+      {!reporting && (
+        <div className="absolute bottom-20 right-4 z-[1000]">
+          <button onClick={startReport}
+            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all text-sm font-bold">
+            <AlertCircle size={18} /> Report Now
+          </button>
+        </div>
+      )}
 
       {/* Reporting banner */}
       {reporting && reportStep === 'locate' && (
-        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-[1000] bg-red-500 text-white px-6 py-3 rounded-full shadow-lg font-bold text-sm flex items-center gap-2">
-          <MapPin size={16} className="animate-bounce" />
-          Click on map or use your location to pin the report
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] bg-red-500 text-white px-4 py-2 rounded-full shadow-lg font-bold text-xs flex items-center gap-2">
+          <MapPin size={14} className="animate-bounce" /> Tap map or use your location
         </div>
       )}
     </div>
