@@ -64,6 +64,7 @@ const COLOR_OPTIONS = ['White', 'Black', 'Brown', 'Golden', 'Gray', 'Mixed'];
 const SIZE_OPTIONS = ['Small', 'Medium', 'Large'];
 
 const LostFound = () => {
+  const [panelOpen, setPanelOpen] = useState(true);
   const [showMatcher, setShowMatcher] = useState(false);
   const [matchResult, setMatchResult] = useState<MatchLostDogResult | null>(null);
   const [showStray, setShowStray] = useState(true);
@@ -210,7 +211,7 @@ const LostFound = () => {
         {filteredMarkers.map(marker => (
           <Marker key={marker.id} position={[marker.lat, marker.lng]} icon={createMarkerIcon(marker.type, marker.image)}>
             <Popup>
-              <div className="w-56">
+              <div className="w-48 sm:w-56">
                 <img src={marker.image} alt={marker.petName || 'Pet'} className="w-full h-32 object-cover rounded-lg mb-2" loading="lazy" />
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${marker.type === 'lost' ? 'bg-blue-500' : 'bg-orange-500'}`}>
@@ -238,7 +239,7 @@ const LostFound = () => {
             icon={createMarkerIcon(report.type, report.photo_url || 'https://cdn.pixabay.com/photo/2016/02/19/15/46/dog-1210559_640.jpg')}
           >
             <Popup>
-              <div className="w-56">
+              <div className="w-48 sm:w-56">
                 {report.photo_url && <img src={report.photo_url} alt="Report" className="w-full h-32 object-cover rounded-lg mb-2" />}
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${report.type === 'lost' ? 'bg-blue-500' : 'bg-orange-500'}`}>
@@ -268,9 +269,31 @@ const LostFound = () => {
         )}
       </MapContainer>
 
-      {/* Left Panel */}
-      <div className="absolute top-4 left-4 z-[1000] w-80 max-w-[calc(100vw-2rem)] pointer-events-none">
-        <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-gray-200 p-4 space-y-4 pointer-events-auto max-h-[calc(100vh-120px)] overflow-y-auto hide-scrollbar">
+      {/* Panel toggle button (mobile) */}
+      {!panelOpen && !reporting && (
+        <button onClick={() => setPanelOpen(true)}
+          className="absolute top-4 left-4 z-[1000] bg-white shadow-lg rounded-full p-2.5 border border-gray-200 md:hidden">
+          <Search size={20} className="text-gray-600" />
+        </button>
+      )}
+
+      {/* Left Panel (desktop) / Bottom Sheet (mobile) */}
+      <div className={`absolute z-[1000] pointer-events-none transition-transform duration-300
+        md:top-4 md:left-4 md:w-80 md:translate-y-0
+        bottom-0 left-0 right-0 md:right-auto md:bottom-auto
+        ${panelOpen || reporting ? 'translate-y-0' : 'translate-y-full md:translate-y-0'}
+      `}>
+        <div className="bg-white/95 backdrop-blur-sm shadow-xl border border-gray-200 pointer-events-auto
+          md:rounded-xl md:p-4 md:max-h-[calc(100vh-120px)]
+          rounded-t-2xl p-4 max-h-[60vh]
+          overflow-y-auto hide-scrollbar space-y-4">
+          {/* Mobile drag handle */}
+          <div className="flex justify-center md:hidden mb-2">
+            <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+          </div>
+          {/* Mobile close */}
+          <button onClick={() => setPanelOpen(false)} className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 md:hidden"><X size={18} /></button>
+
           {!reporting && !matchResult ? (
             <>
               <div className="relative">
@@ -474,18 +497,18 @@ const LostFound = () => {
 
       {/* Report Now button */}
       {!reporting && (
-        <div className="absolute bottom-20 right-4 z-[1000]">
-          <button onClick={startReport}
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all text-sm font-bold">
-            <AlertCircle size={18} /> Report Now
+        <div className="absolute z-[1000] md:bottom-20 md:right-4 bottom-4 right-4">
+          <button onClick={() => { startReport(); setPanelOpen(true); }}
+            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-lg hover:shadow-xl transition-all text-xs sm:text-sm font-bold">
+            <AlertCircle size={16} /> Report
           </button>
         </div>
       )}
 
       {/* Reporting banner */}
       {reporting && reportStep === 'locate' && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] bg-red-500 text-white px-4 py-2 rounded-full shadow-lg font-bold text-xs flex items-center gap-2">
-          <MapPin size={14} className="animate-bounce" /> Tap map or use your location
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] bg-red-500 text-white px-3 py-2 rounded-full shadow-lg font-bold text-[10px] sm:text-xs flex items-center gap-1.5 whitespace-nowrap">
+          <MapPin size={12} className="animate-bounce" /> Tap map or use location
         </div>
       )}
     </div>
