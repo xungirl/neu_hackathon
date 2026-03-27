@@ -302,11 +302,9 @@ uvicorn app.main:app --reload --port 8001
 
 ## 👥 Team & Acknowledgements
 
-Built with ❤️ at **Seattle Hackathon 2026** — fueled by late-night coffee, pixel-perfect dreams, and the wagging tails that kept us going.
+Built with ❤️ at **Seattle Hackathon 2026**.
 
-This project exists because of **[Kimberlyn](https://www.linkedin.com/in/manqiu-yang-3b6a46311)** — the kind of person who stops for every stray, remembers every shelter dog's name, and believes no pet should ever feel unloved. Her heart for animals became our north star. This one's for you, K.
-
-We didn't just build an app. We built a love letter to every pet still waiting by the window for someone to come home. 🐾
+Inspired by **[Kimberlyn](https://www.linkedin.com/in/manqiu-yang-3b6a46311)** — who taught us that every stray deserves a name, and every name deserves a home. This one's for you, K. 🐾
 
 ---
 
