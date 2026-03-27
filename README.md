@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.png" alt="Goodle Logo" width="240" />
+  <img src="docs/logo.png" alt="Goodle" width="280" />
 </p>
 
 <p align="center">
