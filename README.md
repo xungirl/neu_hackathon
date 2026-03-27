@@ -10,119 +10,157 @@
 
 <p align="center">
   <b>The all-in-one platform for pet lovers.</b><br/>
-  Match your furry friend, report lost pets, or adopt a new family member.
+  Match your furry friend, report lost pets, or adopt a new family member today.
 </p>
 
 <p align="center">
-  <a href="https://xungirl.github.io/neu_hackathon/">Live Demo</a> &bull;
-  <a href="https://goodle-backend-779591146096.us-central1.run.app">API</a>
+  <a href="https://xungirl.github.io/neu_hackathon/"><img src="https://img.shields.io/badge/%F0%9F%8C%90_Live_Demo-Visit_Now-F97316?style=for-the-badge" alt="Live Demo" /></a>
+  &nbsp;
+  <a href="https://goodle-backend-779591146096.us-central1.run.app"><img src="https://img.shields.io/badge/%F0%9F%94%97_API-Cloud_Run-4285F4?style=for-the-badge" alt="API" /></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/FastAPI-0.116-009688?logo=fastapi&logoColor=white" />
+  <img src="https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Gemini_AI-Powered-8E75B2?logo=google&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/badge/Google_Cloud-Run-4285F4?logo=googlecloud&logoColor=white" />
 </p>
 
 ---
 
-## Inspiration
+## 💡 Inspiration
 
-Every year, millions of pets end up in shelters, and countless others go missing. We built **Goodle** because we believe technology can bridge the gap between pets in need and the people who love them. Inspired by modern social platforms, we created a Tinder-like matching experience for pet adoption, a real-time lost & found system, and an AI-powered pet profile builder — all in one place.
+> *"Everyone Googles for information — but who Goodles for love?"*
 
-Our name **Goodle** comes from "Good" + "Doodle" — because every pet deserves a good life.
+Every year, **6.3 million** pets enter shelters in the US alone. Countless others go missing and never find their way home. We saw a gap: there was no single platform that combined **adoption**, **lost & found**, and **social matching** for pets.
 
-## Features
+So we built **Goodle** — a Tinder-meets-Petfinder experience powered by AI. Upload a photo, and our Gemini AI tells you the breed, age, and personality in seconds. Swipe to match. Post to adopt. Pin on the map to reunite.
 
-- **Pet Matching** — Swipe-style interface to discover pets based on breed, distance, gender, and personality. Filter in real-time.
-- **Adoption Square** — Browse adoptable pets with search, breed, and age filters. Each pet has a rich detail page.
-- **Lost & Found** — Report lost pets or sightings with map-based markers for quick community response.
-- **AI Pet Analysis** — Upload a photo and our Gemini AI instantly detects breed, age, size, and personality traits.
-- **Smart Profiles** — AI-assisted pet profile creation with auto-filled breed, color tags, and personality descriptions.
-- **User Auth** — Email/password registration and login with JWT-based session management.
+The name? **Good** + **Doodle** = **Goodle**. Because every pet deserves a good life. 🐕
 
-## Tech Stack
+---
 
-### Frontend
-| Technology | Purpose |
+## ✨ Features
+
+| | Feature | What it does |
+|---|---|---|
+| 💘 | **Pet Matching** | Tinder-style swipe cards with real-time filters — distance, gender, personality |
+| 🏠 | **Adoption Square** | Browse all adoptable pets with search, breed & age filters, rich detail pages |
+| 📍 | **Lost & Found** | Map-based lost pet reports with red/blue markers for instant community alerts |
+| 🤖 | **AI Photo Analysis** | Upload a pet photo → Gemini AI detects breed, age, size, traits in seconds |
+| 🪄 | **Smart Profiles** | AI auto-fills your pet's profile — breed, color tags, personality description |
+| 🔐 | **User Auth** | Email/password signup & login with JWT sessions, persistent across refreshes |
+| 🎥 | **Video Moments** | Showcase your pet's personality with short video clips |
+
+---
+
+## 🛠 Tech Stack
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🎨 Frontend
+| | Tech |
 |---|---|
-| **React 18** + **TypeScript** | UI framework with type safety |
-| **Vite** | Fast build tool and dev server |
-| **React Router** (HashRouter) | Client-side routing for GitHub Pages |
-| **Tailwind CSS** | Utility-first styling |
-| **Lucide React** | Icon library |
-| **Axios** | HTTP client for API calls |
+| ⚛️ | **React 18** + **TypeScript** |
+| ⚡ | **Vite** — lightning-fast builds |
+| 🎨 | **Tailwind CSS** — utility-first styling |
+| 🧭 | **React Router** (HashRouter) |
+| 🎯 | **Lucide React** — beautiful icons |
+| 🌐 | **Axios** — HTTP client |
 
-### Backend
-| Technology | Purpose |
+</td>
+<td width="50%" valign="top">
+
+### ⚙️ Backend
+| | Tech |
 |---|---|
-| **FastAPI** (Python 3.11) | High-performance async API framework |
-| **PostgreSQL** | Persistent relational database |
-| **Google Cloud SQL** | Managed PostgreSQL in production |
-| **Google Cloud Run** | Serverless container deployment |
-| **psycopg2** | PostgreSQL adapter |
-| **python-jose** + **bcrypt** | JWT auth and password hashing |
-| **Pydantic** | Request/response validation |
-| **Google Gemini AI** | Pet photo analysis and breed detection |
+| 🐍 | **FastAPI** (Python 3.11) |
+| 🐘 | **PostgreSQL 15** |
+| 🤖 | **Google Gemini AI** |
+| 🔑 | **python-jose** + **bcrypt** — JWT auth |
+| 📋 | **Pydantic** — validation |
+| 🔌 | **psycopg2** — Postgres adapter |
 
-### Infrastructure & CI/CD
-| Technology | Purpose |
-|---|---|
-| **GitHub Actions** | Automated frontend deployment on push |
-| **GitHub Pages** | Static frontend hosting |
-| **Google Cloud Run** | Backend container hosting |
-| **Google Cloud SQL** | Managed PostgreSQL database |
-| **Docker** | Container packaging for backend |
+</td>
+</tr>
+</table>
 
-## Architecture
+### ☁️ Infrastructure
+| | Service | Role |
+|---|---|---|
+| 🚀 | **Google Cloud Run** | Serverless backend hosting |
+| 🗄️ | **Google Cloud SQL** | Managed PostgreSQL database |
+| 📄 | **GitHub Pages** | Static frontend hosting |
+| 🔄 | **GitHub Actions** | CI/CD — auto-deploy on push |
+| 🐳 | **Docker** | Backend containerization |
+
+---
+
+## 🏗 Architecture
 
 ```
-┌─────────────────┐     HTTPS      ┌─────────────────────┐
-│  GitHub Pages    │ ──────────────▶│  Google Cloud Run    │
-│  (React SPA)    │    /api/*      │  (FastAPI Backend)   │
-└─────────────────┘                └──────────┬──────────┘
-                                              │
-                                   ┌──────────▼──────────┐
-                                   │  Google Cloud SQL    │
-                                   │  (PostgreSQL 15)     │
-                                   └──────────┬──────────┘
-                                              │
-                                   ┌──────────▼──────────┐
-                                   │  Google Gemini AI    │
-                                   │  (Photo Analysis)    │
-                                   └─────────────────────┘
+  ┌──────────────────┐         HTTPS          ┌──────────────────────┐
+  │                  │ ──────── /api/* ──────▶ │                      │
+  │  GitHub Pages    │                         │  Google Cloud Run    │
+  │  (React SPA)     │ ◀────── JSON ────────  │  (FastAPI)           │
+  │                  │                         │                      │
+  └──────────────────┘                         └──────────┬───────────┘
+                                                          │
+                                               ┌──────────▼───────────┐
+                                               │  Google Cloud SQL     │
+                                               │  PostgreSQL 15        │
+                                               └──────────┬───────────┘
+                                                          │
+                                               ┌──────────▼───────────┐
+                                               │  Google Gemini AI     │
+                                               │  Photo & Video        │
+                                               │  Analysis              │
+                                               └──────────────────────┘
 ```
 
-## Project Structure
+---
+
+## 📂 Project Structure
 
 ```
 goodle/
-├── app/                    # Backend (FastAPI)
-│   ├── ai/                 # Gemini AI integration
-│   ├── api/                # API route handlers
-│   ├── core/               # Auth, settings, dependencies
-│   ├── db/                 # Database abstraction (SQLite/PostgreSQL)
-│   ├── routes/             # Auth, pets routes
-│   └── main.py             # App entry point
-├── src/                    # Frontend (React)
-│   ├── api/                # Axios client & service layer
-│   ├── assets/pets/        # Local pet images
-│   ├── components/         # Navbar, Footer, shared UI
-│   ├── context/            # Auth context & hooks
-│   ├── pages/              # Home, Matching, Adoption, PostPet, etc.
-│   ├── services/           # Mock data
-│   └── types/              # TypeScript interfaces
-├── .github/workflows/      # CI/CD pipeline
-├── Dockerfile              # Backend container config
-├── vite.config.ts          # Vite build config
-└── requirements.txt        # Python dependencies
+├── 🐍 app/                     # Backend
+│   ├── ai/                     #   Gemini AI clients
+│   ├── api/                    #   Route handlers
+│   ├── core/                   #   Auth, config, deps
+│   ├── db/                     #   Database layer (SQLite / PostgreSQL)
+│   ├── routes/                 #   Auth & pets endpoints
+│   └── main.py                 #   FastAPI app entry
+├── ⚛️ src/                      # Frontend
+│   ├── api/                    #   Axios services
+│   ├── assets/pets/            #   Pet images
+│   ├── components/             #   Navbar, Footer
+│   ├── context/                #   Auth context
+│   ├── pages/                  #   All page components
+│   ├── services/               #   Mock data
+│   └── types/                  #   TypeScript types
+├── 🔄 .github/workflows/       # CI/CD
+├── 🐳 Dockerfile               # Backend container
+├── ⚡ vite.config.ts            # Frontend build config
+└── 📋 requirements.txt         # Python deps
 ```
 
-## Getting Started
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 20+
-- Python 3.11+
-- PostgreSQL (optional, SQLite used locally)
+> Node.js 20+ &bull; Python 3.11+ &bull; PostgreSQL *(optional — SQLite works locally)*
 
 ### Frontend
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev          # → http://localhost:5173
 ```
 
 ### Backend
@@ -131,20 +169,28 @@ pip install -r requirements.txt -r requirements-backend.txt
 uvicorn app.main:app --reload --port 8001
 ```
 
-### Environment Variables
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string (omit for SQLite) |
-| `JWT_SECRET` | Secret key for JWT tokens |
-| `GEMINI_API_KEY` | Google Gemini API key for AI features |
-| `AI_MOCK_MODE` | Set to `1` to skip real AI calls |
+### 🔑 Environment Variables
+| Variable | Description | Required |
+|---|---|---|
+| `DATABASE_URL` | PostgreSQL connection string | Production only |
+| `JWT_SECRET` | Secret for JWT token signing | Yes |
+| `GEMINI_API_KEY` | Google Gemini API key | For AI features |
+| `AI_MOCK_MODE` | Set `1` to use mock AI responses | Dev only |
 
-## Team
+---
 
-Built with love at **NEU Hackathon 2026** in Seattle.
+## 👥 Team
+
+Built with ❤️ and ☕ at **NEU Hackathon 2026** in Seattle, WA.
+
+We're a team of pet lovers who believe technology should make the world better — one paw at a time.
 
 ---
 
 <p align="center">
-  <i>Pets are family.</i> 🐾
+  <img src="https://readme-typing-svg.demolab.com?font=Indie+Flower&size=22&pause=2000&color=F97316&center=true&vCenter=true&width=250&lines=Pets+are+family.+%F0%9F%90%BE" alt="Pets are family." />
+</p>
+
+<p align="center">
+  <sub>Made with 🧡 by the Goodle team &bull; NEU Hackathon 2026</sub>
 </p>
