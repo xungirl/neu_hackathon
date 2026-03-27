@@ -7,14 +7,13 @@
 </p>
 
 <p align="center">
-  <b>The all-in-one platform for pet lovers.</b><br/>
-  Match. Report. Adopt. Reunite. — All powered by AI.
+  <b>The all-in-one platform for pet lovers.</b>
 </p>
 
 <p align="center">
   <a href="https://xungirl.github.io/neu_hackathon/"><img src="https://img.shields.io/badge/%F0%9F%8C%90_Live_Demo-Visit_Now-C4956A?style=for-the-badge" alt="Live Demo" /></a>
-  &nbsp;
-  <a href="https://goodle-backend-779591146096.us-central1.run.app"><img src="https://img.shields.io/badge/%F0%9F%94%97_API-Cloud_Run-8FA5B2?style=for-the-badge" alt="API" /></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://goodle-backend-779591146096.us-central1.run.app"><img src="https://img.shields.io/badge/%F0%9F%93%A2_Report-Lost_Pet-8FA5B2?style=for-the-badge" alt="Report" /></a>
 </p>
 
 <p align="center">
@@ -303,11 +302,11 @@ uvicorn app.main:app --reload --port 8001
 
 ## 👥 Team & Acknowledgements
 
-Built with ❤️ at **Seattle Hackathon 2026**.
+Built with ❤️ at **Seattle Hackathon 2026** — fueled by late-night coffee, pixel-perfect dreams, and the wagging tails that kept us going.
 
-Special thanks to **[Kimberlyn](https://www.linkedin.com/in/manqiu-yang-3b6a46311)** for inspiring the idea — her passion for animal welfare is the heart of Goodle.
+This project exists because of **[Kimberlyn](https://www.linkedin.com/in/manqiu-yang-3b6a46311)** — the kind of person who stops for every stray, remembers every shelter dog's name, and believes no pet should ever feel unloved. Her heart for animals became our north star. This one's for you, K.
 
-We're a team of pet lovers who believe technology should make the world better — one paw at a time.
+We didn't just build an app. We built a love letter to every pet still waiting by the window for someone to come home. 🐾
 
 ---
 

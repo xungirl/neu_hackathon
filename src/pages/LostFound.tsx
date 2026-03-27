@@ -122,11 +122,23 @@ const LostFound = () => {
     markersRef.current = [];
 
     const addMarker = (lat: number, lng: number, type: 'lost' | 'stray', image: string, name: string, desc: string, time: string, extra?: { color?: string; size?: string }) => {
+      const color = type === 'lost' ? '#3B82F6' : '#F97316';
+      const colorAlpha = type === 'lost' ? 'rgba(59,130,246,0.25)' : 'rgba(249,115,22,0.25)';
       const el = document.createElement('div');
-      el.style.cssText = 'width:42px;height:42px;cursor:pointer;';
-      el.innerHTML = `<div style="width:42px;height:42px;border-radius:50%;border:3px solid ${type === 'lost' ? '#3B82F6' : '#F97316'};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3);background:#fff;">
-        <img src="${image}" style="width:100%;height:100%;object-fit:cover;" />
-      </div>`;
+      el.style.cssText = 'width:60px;height:60px;cursor:pointer;position:relative;';
+      el.innerHTML = `
+        <style>
+          @keyframes ripple { 0% { transform:scale(0.8); opacity:0.6; } 100% { transform:scale(2.2); opacity:0; } }
+        </style>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+          <div style="position:absolute;width:42px;height:42px;border-radius:50%;background:${colorAlpha};animation:ripple 2s ease-out infinite;"></div>
+          <div style="position:absolute;width:42px;height:42px;border-radius:50%;background:${colorAlpha};animation:ripple 2s ease-out infinite 0.6s;"></div>
+          <div style="position:absolute;width:42px;height:42px;border-radius:50%;background:${colorAlpha};animation:ripple 2s ease-out infinite 1.2s;"></div>
+          <div style="position:relative;width:42px;height:42px;border-radius:50%;border:3px solid ${color};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3);background:#fff;z-index:1;">
+            <img src="${image}" style="width:100%;height:100%;object-fit:cover;" />
+          </div>
+        </div>
+      `;
 
       const popup = new maplibregl.Popup({ offset: 25, maxWidth: '260px' }).setHTML(`
         <div style="font-family:system-ui,-apple-system,sans-serif;">
@@ -405,7 +417,7 @@ const LostFound = () => {
         <div className="absolute z-[1000] md:bottom-20 md:right-4 bottom-4 right-4">
           <button onClick={startReport}
             className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-lg hover:shadow-xl transition-all text-xs sm:text-sm font-bold">
-            <AlertCircle size={16} /> Report
+            <span style={{fontSize:'16px'}}>📢</span> Report
           </button>
         </div>
       )}
