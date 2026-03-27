@@ -46,40 +46,30 @@ The idea for Goodle was inspired by **Kimberlyn**, whose passion for animal welf
 
 ## ✨ Features
 
-<table>
-<tr>
-<td align="center" width="25%">
-  <h3>💘</h3>
-  <b>Pet Matching</b><br/>
-  <sub>Swipe cards with real-time filters — distance, gender, personality. 18+ profiles across Seattle.</sub>
-</td>
-<td align="center" width="25%">
-  <h3>🏠</h3>
-  <b>Adoption Square</b><br/>
-  <sub>Search, filter by breed & age. Rich detail pages with health info, activity levels, and owner contact.</sub>
-</td>
-<td align="center" width="25%">
-  <h3>🗺️</h3>
-  <b>Lost & Found Map</b><br/>
-  <sub>Vector map with GPS reports, photo upload, color/size tags. Persistent in PostgreSQL.</sub>
-</td>
-<td align="center" width="25%">
-  <h3>🤖</h3>
-  <b>AI Photo Analysis</b><br/>
-  <sub>Gemini AI detects breed, age, size, color, and personality from a single photo.</sub>
-</td>
-</tr>
-</table>
-
-| | Feature | Details |
-|---|---|---|
-| 💘 | **Pet Matching** | Swipe cards, distance slider (1–100 mi), gender toggle, personality multi-select |
-| 🏠 | **Adoption Square** | Keyword search, breed dropdown, age filter, detail pages with activity/sociability bars |
-| 🗺️ | **Lost & Found** | Vector map (MapLibre GL), GPS reports, photo upload, color/size, email contact |
-| 🤖 | **AI Analysis** | Gemini AI breed detection, age estimation, personality guess from photo |
-| 🔐 | **Auth** | Email/password JWT auth, required for report submission |
-| 📧 | **Contact** | Pre-filled mailto links for instant reporter communication |
-| 📱 | **Responsive** | Mobile bottom-sheet, touch zoom, adaptive grids on every page |
+```mermaid
+mindmap
+  root((Goodle))
+    💘 Pet Matching
+      Swipe Cards
+      Distance / Gender / Personality Filters
+      18+ Profiles in Seattle
+    🏠 Adoption Square
+      Search & Filter
+      Rich Detail Pages
+      Health & Activity Info
+    🗺️ Lost & Found
+      Vector Map WebGL
+      GPS Report + Photo
+      Persistent in PostgreSQL
+    🤖 AI Analysis
+      Gemini Breed Detection
+      Age & Size Estimation
+      Personality Guess
+    🔐 Auth & Contact
+      JWT Email/Password
+      Pre-filled Mailto
+      Mobile Responsive
+```
 
 ---
 
@@ -147,44 +137,37 @@ graph LR
     style D fill:#9BB5A0,color:#fff
 ```
 
-### Why Vector Tiles Win
+### Raster vs Vector
 
+```mermaid
+graph LR
+    subgraph "❌ Raster PNG"
+        R1["15-25 KB/tile"]
+        R2["CPU rendering"]
+        R3["Block-by-block load"]
+    end
+    subgraph "✅ Vector PBF"
+        V1["2-5 KB/tile"]
+        V2["WebGL GPU rendering"]
+        V3["60fps silky smooth"]
+    end
+    R1 -.->|5× smaller| V1
+    R2 -.->|hardware accel| V2
+    R3 -.->|no artifacts| V3
+
+    style R1 fill:#C4956A,color:#fff
+    style R2 fill:#C4956A,color:#fff
+    style R3 fill:#C4956A,color:#fff
+    style V1 fill:#9BB5A0,color:#fff
+    style V2 fill:#9BB5A0,color:#fff
+    style V3 fill:#9BB5A0,color:#fff
 ```
-                    Raster (PNG)          Vector (PBF)
-    ┌──────────────┬──────────────────┬──────────────────┐
-    │ Tile Size    │  15-25 KB each   │  2-5 KB each     │
-    │ Zoom         │  Reload new PNGs │  GPU re-renders   │
-    │ Rendering    │  CPU (DOM/Canvas)│  WebGL (GPU)      │
-    │ Smoothness   │  Block-by-block  │  Silky smooth     │
-    │ Rotation     │  Not supported   │  Full 3D support  │
-    │ Labels       │  Baked in image  │  Dynamic/crisp    │
-    └──────────────┴──────────────────┴──────────────────┘
-```
 
-### All Optimizations Applied
+### 9 Optimizations in 4 Versions
 
-| # | Optimization | Impact | Stage |
-|---|---|---|---|
-| 1 | `React.lazy()` map component | Map JS only loads when page visited | v1 |
-| 2 | `preconnect` to tile CDN in `<head>` | Saves ~200ms DNS+TLS handshake | v1 |
-| 3 | Multiple tile subdomains (`mt0-mt3`) | 4× parallel downloads | v3 |
-| 4 | `preferCanvas={true}` | GPU-accelerated marker rendering | v2 |
-| 5 | `updateWhenIdle` / `updateWhenZooming=false` | No tile fetch during interaction | v2 |
-| 6 | Marker icon caching (memory `Map`) | No DOM recreation for same icons | v2 |
-| 7 | Remove CSS ping animations | Eliminates constant GPU repaints | v2 |
-| 8 | **Switch to MapLibre GL + vector tiles** | **5-10× smaller data, WebGL smooth** | **v4** |
-| 9 | Loading skeleton with spinner | No white screen during init | v1 |
+> `lazy loading` → `preconnect` → `4× parallel CDN` → `canvas GPU` → `idle updates` → `icon cache` → `no animations` → **`vector tiles`** → `skeleton UI`
 
-### Final Map Stack
-
-| Component | Technology | Why |
-|---|---|---|
-| **Engine** | MapLibre GL JS | Free, WebGL, vector rendering |
-| **Tiles** | CARTO Voyager (vector) | Beautiful style, fast CDN, free |
-| **Format** | Protocol Buffers (.pbf) | 5× smaller than PNG tiles |
-| **Rendering** | WebGL (GPU) | 60fps zoom/pan, no block artifacts |
-| **Markers** | Custom HTML elements | Pet photos with colored borders |
-| **Popups** | MapLibre native | Photo, description, mailto contact |
+**Final stack:** MapLibre GL JS + CARTO Voyager vectors + WebGL + Protocol Buffers
 
 ---
 
