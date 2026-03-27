@@ -2,41 +2,65 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Search, ArrowRight, Heart, Loader2 } from 'lucide-react';
 import { petsService } from '../api/services/pets';
+import { mockPets } from '../services/mockData';
 
-interface ApiPet {
-  id: number;
+interface AdoptionPet {
+  id: string;
   name: string;
   breed: string;
   size: string;
   gender: string;
-  age: number;
+  age: string;
   bio: string;
-  photos: string[];
+  image: string;
   personality_tags: string[];
   vaccinated: boolean;
   neutered: boolean;
+  location?: string;
 }
 
-const ageLabel = (age: number) => {
-  if (age <= 1) return 'Puppy';
-  if (age <= 3) return 'Young';
-  if (age <= 8) return 'Adult';
-  return 'Senior';
-};
-
 const Adoption = () => {
-  const [pets, setPets] = useState<ApiPet[]>([]);
+  const [apiPets, setApiPets] = useState<AdoptionPet[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+
+  const mockAdoptionPets: AdoptionPet[] = mockPets.map(p => ({
+    id: `mock-${p.id}`,
+    name: p.name,
+    breed: p.breed,
+    size: p.size,
+    gender: p.gender,
+    age: p.age,
+    bio: p.description,
+    image: p.image,
+    personality_tags: p.personality,
+    vaccinated: p.health?.vaccinated || false,
+    neutered: p.health?.neutered || false,
+    location: p.location,
+  }));
 
   useEffect(() => {
     petsService.getPets({ limit: 50 })
       .then((res: any) => {
-        setPets(res.data?.items || []);
+        const items = (res.data?.items || []).map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          breed: p.breed,
+          size: p.size,
+          gender: p.gender,
+          age: p.age ? `${p.age} yrs` : 'Unknown',
+          bio: p.bio,
+          image: p.photos?.[0] || '',
+          personality_tags: p.personality_tags || [],
+          vaccinated: p.vaccinated,
+          neutered: p.neutered,
+        }));
+        setApiPets(items);
       })
-      .catch(() => setError('Failed to load pets.'))
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const pets = [...apiPets, ...mockAdoptionPets];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -95,20 +119,13 @@ const Adoption = () => {
         <div className="flex justify-center items-center py-24">
           <Loader2 className="animate-spin text-primary" size={40} />
         </div>
-      ) : error ? (
-        <div className="text-center py-24 text-red-500">{error}</div>
-      ) : pets.length === 0 ? (
-        <div className="text-center py-24 text-gray-400">
-          <p className="text-xl font-medium">No pets posted yet.</p>
-          <NavLink to="/post" className="mt-4 inline-block text-primary font-bold hover:underline">Be the first to post one →</NavLink>
-        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {pets.map((pet) => (
-            <NavLink to={`/adoption/${pet.id}`} key={pet.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full">
+            <div key={pet.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full cursor-pointer">
               <div className="relative h-64 overflow-hidden bg-gray-100">
-                {pet.photos?.[0] ? (
-                  <img src={pet.photos[0]} alt={pet.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                {pet.image ? (
+                  <img src={pet.image} alt={pet.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300 text-6xl">🐾</div>
                 )}
@@ -122,14 +139,15 @@ const Adoption = () => {
                   <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">{pet.breed}</span>
                 </div>
                 <div className="flex items-center gap-2 mb-3 text-xs text-gray-500 font-medium">
-                  <span>{ageLabel(pet.age)}</span> • <span>{pet.gender}</span> • <span className="capitalize">{pet.size}</span>
+                  <span>{pet.age}</span> • <span>{pet.gender}</span> • <span className="capitalize">{pet.size}</span>
                 </div>
+                {pet.location && <p className="text-xs text-gray-400 mb-2">{pet.location}</p>}
                 <p className="text-sm text-gray-600 line-clamp-2 mb-4 flex-grow">
                   {pet.bio || 'No description provided.'}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {(pet.personality_tags || []).slice(0, 2).map(tag => (
-                    <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                  {(pet.personality_tags || []).slice(0, 3).map(tag => (
+                    <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
                       {tag}
                     </span>
                   ))}
@@ -141,7 +159,7 @@ const Adoption = () => {
                   </span>
                 </div>
               </div>
-            </NavLink>
+            </div>
           ))}
 
           {/* Promo Card */}
