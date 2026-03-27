@@ -15,16 +15,20 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-const createMarkerIcon = (type: 'lost' | 'stray', image: string) => L.divIcon({
-  className: 'custom-marker',
-  html: `<div style="position:relative;width:44px;height:44px;">
-    <div style="position:absolute;inset:-6px;border-radius:50%;background:${type === 'lost' ? 'rgba(59,130,246,0.3)' : 'rgba(249,115,22,0.3)'};animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
-    <div style="width:44px;height:44px;border-radius:50%;border:3px solid ${type === 'lost' ? '#3B82F6' : '#F97316'};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3);background:#fff;">
+const markerIconCache = new Map<string, L.DivIcon>();
+const createMarkerIcon = (type: 'lost' | 'stray', image: string) => {
+  const key = `${type}-${image}`;
+  if (markerIconCache.has(key)) return markerIconCache.get(key)!;
+  const icon = L.divIcon({
+    className: 'custom-marker',
+    html: `<div style="width:40px;height:40px;border-radius:50%;border:3px solid ${type === 'lost' ? '#3B82F6' : '#F97316'};overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.25);background:#fff;">
       <img src="${image}" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
-    </div>
-  </div>`,
-  iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -26],
-});
+    </div>`,
+    iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -24],
+  });
+  markerIconCache.set(key, icon);
+  return icon;
+};
 
 const newReportIcon = L.divIcon({
   className: 'custom-marker',
@@ -163,12 +167,13 @@ const LostFound = () => {
         whenReady={() => setMapReady(true)}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/">OSM</a>'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
           maxZoom={19}
-          keepBuffer={8}
+          keepBuffer={4}
           updateWhenZooming={false}
           updateWhenIdle={true}
+          tileSize={256}
         />
         <ZoomControl position="bottomright" />
         <ScaleControl position="bottomleft" imperial={true} metric={true} />
