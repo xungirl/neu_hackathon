@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, AlertCircle, X, ChevronRight, MapPin, Clock, Navigation } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { mockMapMarkers } from '../services/mockData';
@@ -163,11 +163,12 @@ const LostFound = () => {
   return (
     <div className="flex-1 relative overflow-hidden h-[calc(100vh-64px)]">
       {/* Real Map */}
-      <MapContainer center={center} zoom={13} className="w-full h-full z-0" zoomControl={false}>
+      <MapContainer center={center} zoom={12} className="w-full h-full z-0" zoomControl={false} minZoom={10} maxZoom={18}>
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
+        <ZoomControl position="bottomright" />
         <FlyTo center={flyTarget} />
         <MapClickHandler onMapClick={handleMapClick} active={reporting && reportStep === 'locate'} />
 
