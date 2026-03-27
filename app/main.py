@@ -12,6 +12,7 @@ from app.ai import DogMatcher, GeminiClient, MockGeminiClient, PhotoAnalyzer, Vi
 from app.api.ai_routes import router as ai_router
 from app.routes.auth import router as auth_router
 from app.routes.pets import router as pets_router
+from app.routes.reports import router as reports_router, initialize_reports_table
 from app.core.response import api_error, api_success
 from app.core.settings import Settings, get_settings
 from app.db.database import Database
@@ -38,6 +39,7 @@ def _create_ai_client(settings: Settings) -> GeminiClient | MockGeminiClient:
 def _initialize_runtime(app: FastAPI, settings: Settings) -> None:
     db = Database(database_url=settings.database_url, sqlite_path=settings.sqlite_path)
     db.initialize()
+    initialize_reports_table(db)
 
     ai_client = _create_ai_client(settings)
     app.state.settings = settings
@@ -120,6 +122,7 @@ def create_app() -> FastAPI:
     app.include_router(ai_router, prefix=settings.api_prefix)
     app.include_router(auth_router, prefix=settings.api_prefix)
     app.include_router(pets_router, prefix=settings.api_prefix)
+    app.include_router(reports_router, prefix=settings.api_prefix)
     return app
 
 

@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, ZoomContr
 import L from 'leaflet';
 // leaflet CSS preloaded in index.html
 import { mockMapMarkers } from '../services/mockData';
+import { reportsService, Report } from '../api/services/reports';
 import LostPetMatcher from '../components/ai/LostPetMatcher';
 import { MatchLostDogResult } from '../types/ai';
 
@@ -74,10 +75,20 @@ const LostFound = () => {
   const [reportStep, setReportStep] = useState<'locate' | 'form'>('locate');
   const [reportPin, setReportPin] = useState<{ lat: number; lng: number } | null>(null);
   const [reportData, setReportData] = useState<ReportData>(defaultReport);
-  const [userReports, setUserReports] = useState<(ReportData & { id: string; timeAgo: string })[]>([]);
+  const [apiReports, setApiReports] = useState<Report[]>([]);
   const [locating, setLocating] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const photoInputRef = useRef<HTMLInputElement>(null);
+
+  // Load reports from backend
+  useEffect(() => {
+    reportsService.getReports({ limit: 100 })
+      .then((res: any) => {
+        setApiReports(res.data?.items || []);
+      })
+      .catch(() => {});
+  }, []);
 
   const filteredMarkers = mockMapMarkers.filter(m => {
     if (m.type === 'stray' && !showStray) return false;
@@ -125,21 +136,37 @@ const LostFound = () => {
     }
   };
 
-  const submitReport = () => {
-    const newReport = {
-      ...reportData,
-      id: `user-${Date.now()}`,
-      timeAgo: 'Just now',
-    };
-    setUserReports(prev => [...prev, newReport]);
-    setSubmitted(true);
-    setTimeout(() => {
-      setReporting(false);
-      setReportPin(null);
-      setReportStep('locate');
-      setReportData(defaultReport);
-      setSubmitted(false);
-    }, 2000);
+  const submitReport = async () => {
+    setSubmitError('');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setSubmitError('Please login first to submit a report.');
+      return;
+    }
+    try {
+      const res: any = await reportsService.createReport({
+        lat: reportData.lat,
+        lng: reportData.lng,
+        type: reportData.type,
+        pet_name: reportData.petName || undefined,
+        description: reportData.description,
+        color: reportData.color || undefined,
+        size: reportData.size || undefined,
+        photo_url: reportData.photoPreview || undefined,
+      });
+      setApiReports(prev => [res.data, ...prev]);
+      setSubmitted(true);
+      setTimeout(() => {
+        setReporting(false);
+        setReportPin(null);
+        setReportStep('locate');
+        setReportData(defaultReport);
+        setSubmitted(false);
+      }, 2000);
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Failed to submit. Please login first.';
+      setSubmitError(msg);
+    }
   };
 
   const cancelReport = () => { setReporting(false); setReportPin(null); setReportStep('locate'); setReportData(defaultReport); };
@@ -204,27 +231,31 @@ const LostFound = () => {
           </Marker>
         ))}
 
-        {userReports.map(report => (
+        {apiReports.filter(r => r.lat && r.lng).map(report => (
           <Marker
             key={report.id}
-            position={[report.lat, report.lng]}
-            icon={createMarkerIcon(report.type, report.photoPreview || 'https://cdn.pixabay.com/photo/2016/02/19/15/46/dog-1210559_640.jpg')}
+            position={[report.lat!, report.lng!]}
+            icon={createMarkerIcon(report.type, report.photo_url || 'https://cdn.pixabay.com/photo/2016/02/19/15/46/dog-1210559_640.jpg')}
           >
             <Popup>
               <div className="w-56">
-                {report.photoPreview && <img src={report.photoPreview} alt="Report" className="w-full h-32 object-cover rounded-lg mb-2" />}
+                {report.photo_url && <img src={report.photo_url} alt="Report" className="w-full h-32 object-cover rounded-lg mb-2" />}
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${report.type === 'lost' ? 'bg-blue-500' : 'bg-orange-500'}`}>
                     {report.type === 'lost' ? 'Lost' : 'Stray'}
                   </span>
-                  <span className="text-xs text-gray-500">{report.timeAgo}</span>
+                  <span className="text-xs text-gray-500">{new Date(report.created_at).toLocaleDateString()}</span>
                 </div>
-                <h3 className="font-bold text-gray-900 text-sm">{report.petName || 'Stray sighting'}</h3>
+                <h3 className="font-bold text-gray-900 text-sm">{report.pet_name || 'Stray sighting'}</h3>
                 <p className="text-xs text-gray-600 mt-1">{report.description}</p>
                 <div className="flex gap-1 mt-1">
                   {report.color && <span className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded">{report.color}</span>}
                   {report.size && <span className="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded">{report.size}</span>}
                 </div>
+                <a href={`mailto:report@goodle.pet?subject=${encodeURIComponent(`[Goodle] ${report.type === 'lost' ? 'Lost' : 'Stray'}: ${report.pet_name || 'Unknown'}`)}&body=${encodeURIComponent(`Hi, I saw your report on Goodle.\n\n"${report.description}"\n\nI'd like to help!\n\nName:\nPhone:\n`)}`}
+                  className="mt-2 w-full bg-primary text-white text-xs font-bold py-1.5 rounded-md hover:bg-orange-600 transition-colors block text-center">
+                  Contact Reporter
+                </a>
               </div>
             </Popup>
           </Marker>
@@ -265,7 +296,7 @@ const LostFound = () => {
                   <span className="text-sm text-gray-700">Lost Pets</span>
                 </label>
               </div>
-              <p className="text-[10px] text-gray-400 text-center">{filteredMarkers.length + userReports.length} reports on map</p>
+              <p className="text-[10px] text-gray-400 text-center">{filteredMarkers.length + apiReports.length} reports on map</p>
             </>
           ) : reporting ? (
             <div>
@@ -380,6 +411,10 @@ const LostFound = () => {
                     </div>
                   </div>
 
+                  {/* Error */}
+                  {submitError && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-2 text-xs text-red-600">{submitError}</div>
+                  )}
                   {/* Submit */}
                   <button onClick={submitReport} disabled={!reportData.description}
                     className="w-full bg-red-500 text-white rounded-lg py-2.5 font-bold text-sm hover:bg-red-600 transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
