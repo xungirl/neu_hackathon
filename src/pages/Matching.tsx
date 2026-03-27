@@ -5,7 +5,20 @@ import { mockPets } from '../services/mockData';
 const Matching = () => {
   const [currentPetIndex, setCurrentPetIndex] = useState(0);
   const [gender, setGender] = useState<'Male' | 'Female'>('Female');
+  const [distance, setDistance] = useState(25);
+  const [selectedTags, setSelectedTags] = useState<string[]>(['Calm']);
+  const allTags = ['Playful', 'Calm', 'Energetic', 'Friendly'];
   const pet = mockPets[currentPetIndex % mockPets.length];
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+  };
+
+  const resetFilters = () => {
+    setGender('Female');
+    setDistance(25);
+    setSelectedTags([]);
+  };
 
   const handleNext = () => {
     setCurrentPetIndex((prev) => prev + 1);
@@ -18,14 +31,16 @@ const Matching = () => {
         <div className="bg-white p-6 rounded-2xl shadow-sm sticky top-24 border border-gray-100">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-display font-bold text-gray-900">Filters</h2>
-            <button className="text-sm text-primary font-semibold hover:text-primary-hover">Reset</button>
+            <button onClick={resetFilters} className="text-sm text-primary font-semibold hover:text-primary-hover">Reset</button>
           </div>
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Maximum Distance</label>
-            <input type="range" min="1" max="100" defaultValue="25" className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary" />
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">Maximum Distance</label>
+              <span className="text-sm font-bold text-primary">{distance} km</span>
+            </div>
+            <input type="range" min="1" max="100" value={distance} onChange={e => setDistance(Number(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary" />
             <div className="flex justify-between mt-1 text-xs text-gray-500">
-                <span>5km</span>
-                <span className="font-bold text-gray-900">25 km</span>
+                <span>1km</span>
                 <span>100km</span>
             </div>
           </div>
@@ -39,8 +54,8 @@ const Matching = () => {
           <div className="mb-6">
              <label className="block text-sm font-medium text-gray-700 mb-2">Personality</label>
              <div className="flex flex-wrap gap-2">
-                 {['Playful', 'Calm', 'Energetic', 'Friendly'].map(tag => (
-                     <span key={tag} className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border transition-colors ${tag === 'Calm' ? 'bg-primary text-white border-primary' : 'bg-gray-100 text-gray-600 border-transparent hover:border-primary hover:text-primary'}`}>
+                 {allTags.map(tag => (
+                     <span key={tag} onClick={() => toggleTag(tag)} className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border transition-colors ${selectedTags.includes(tag) ? 'bg-primary text-white border-primary' : 'bg-gray-100 text-gray-600 border-transparent hover:border-primary hover:text-primary'}`}>
                          {tag}
                      </span>
                  ))}
