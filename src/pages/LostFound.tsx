@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, AlertCircle, X, ChevronRight, MapPin, Clock, Navigation, Camera } from 'lucide-react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { Search, AlertCircle, X, ChevronRight, MapPin, Clock, Navigation, Camera, Loader2 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, ZoomControl, ScaleControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -140,10 +140,18 @@ const LostFound = () => {
 
   const cancelReport = () => { setReporting(false); setReportPin(null); setReportStep('locate'); setReportData(defaultReport); };
 
+  const [mapReady, setMapReady] = useState(false);
   const center: [number, number] = [47.6362, -122.3321];
 
   return (
     <div className="flex-1 relative overflow-hidden h-[calc(100vh-64px)]">
+      {/* Loading overlay */}
+      {!mapReady && (
+        <div className="absolute inset-0 z-[500] bg-gray-100 flex flex-col items-center justify-center">
+          <Loader2 className="animate-spin text-primary mb-3" size={36} />
+          <p className="text-sm text-gray-500 font-medium">Loading map...</p>
+        </div>
+      )}
       <MapContainer
         center={center}
         zoom={13}
@@ -152,11 +160,15 @@ const LostFound = () => {
         minZoom={10}
         maxZoom={18}
         preferCanvas={true}
+        whenReady={() => setMapReady(true)}
       >
         <TileLayer
-          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-          maxZoom={20}
+          attribution='&copy; <a href="https://www.openstreetmap.org/">OSM</a>'
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
+          keepBuffer={8}
+          updateWhenZooming={false}
+          updateWhenIdle={true}
         />
         <ZoomControl position="bottomright" />
         <ScaleControl position="bottomleft" imperial={true} metric={true} />
