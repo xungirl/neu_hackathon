@@ -4,6 +4,24 @@ import { Heart, Share, CheckCircle, Activity, Shield, Calendar, MessageCircle, I
 import { petsService } from '../api/services/pets';
 import { mockPets } from '../services/mockData';
 
+const breedFallbackImages: Record<string, string> = {
+  'ragdoll': 'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_1280.jpg',
+  'cat': 'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_1280.jpg',
+  'shiba': 'https://cdn.pixabay.com/photo/2019/07/23/13/51/dog-4357790_1280.jpg',
+  'golden': 'https://cdn.pixabay.com/photo/2018/01/09/11/04/dog-3071334_1280.jpg',
+  'husky': 'https://cdn.pixabay.com/photo/2016/02/19/15/46/dog-1210559_1280.jpg',
+  'labrador': 'https://cdn.pixabay.com/photo/2016/12/13/05/15/puppy-1903313_1280.jpg',
+  'pug': 'https://cdn.pixabay.com/photo/2015/03/26/09/47/pug-690566_1280.jpg',
+  'default': 'https://cdn.pixabay.com/photo/2016/02/19/15/46/dog-1210559_1280.jpg',
+};
+const getBreedImage = (breed: string): string => {
+  const lower = breed.toLowerCase();
+  for (const [key, url] of Object.entries(breedFallbackImages)) {
+    if (key !== 'default' && lower.includes(key)) return url;
+  }
+  return breedFallbackImages['default'];
+};
+
 interface PetData {
   name: string;
   breed: string;
@@ -81,8 +99,8 @@ const PetDetails = () => {
           gender: p.gender,
           age: p.age ? `${p.age} yrs` : 'Unknown',
           bio: p.bio,
-          image: p.photos?.[0] || '',
-          photos: p.photos || [],
+          image: p.photos?.[0] || getBreedImage(p.breed || ''),
+          photos: p.photos?.length ? p.photos : [getBreedImage(p.breed || '')],
           personality_tags: p.personality_tags || [],
           vaccinated: p.vaccinated,
           neutered: p.neutered,
