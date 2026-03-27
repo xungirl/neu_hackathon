@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Search, ArrowRight, Heart, Loader2 } from 'lucide-react';
 import { petsService } from '../api/services/pets';
@@ -33,6 +33,7 @@ interface AdoptionPet {
   size: string;
   gender: string;
   age: string;
+  ageNum: number;
   bio: string;
   image: string;
   personality_tags: string[];
@@ -41,9 +42,20 @@ interface AdoptionPet {
   location?: string;
 }
 
+const parseAgeNum = (age: string): number => {
+  const m = age.match(/(\d+)/);
+  if (!m) return 0;
+  const n = parseInt(m[1]);
+  if (age.toLowerCase().includes('mo')) return n / 12;
+  return n;
+};
+
 const Adoption = () => {
   const [apiPets, setApiPets] = useState<AdoptionPet[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [breedFilter, setBreedFilter] = useState('Any Breed');
+  const [ageFilter, setAgeFilter] = useState('Any Age');
 
   const mockAdoptionPets: AdoptionPet[] = mockPets.map(p => ({
     id: `mock-${p.id}`,
@@ -52,6 +64,7 @@ const Adoption = () => {
     size: p.size,
     gender: p.gender,
     age: p.age,
+    ageNum: parseAgeNum(p.age),
     bio: p.description,
     image: p.image,
     personality_tags: p.personality,
@@ -70,6 +83,7 @@ const Adoption = () => {
           size: p.size,
           gender: p.gender,
           age: p.age ? `${p.age} yrs` : 'Unknown',
+          ageNum: p.age || 0,
           bio: p.bio,
           image: p.photos?.[0] || getBreedImage(p.breed || ''),
           personality_tags: p.personality_tags || [],
@@ -82,7 +96,38 @@ const Adoption = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const pets = [...apiPets, ...mockAdoptionPets];
+  const allPets = [...apiPets, ...mockAdoptionPets];
+
+  const allBreeds = useMemo(() => {
+    const breeds = new Set(allPets.map(p => p.breed));
+    return Array.from(breeds).sort();
+  }, [apiPets]);
+
+  const filteredPets = useMemo(() => {
+    return allPets.filter(pet => {
+      if (search) {
+        const q = search.toLowerCase();
+        const match = pet.name.toLowerCase().includes(q)
+          || pet.breed.toLowerCase().includes(q)
+          || pet.bio.toLowerCase().includes(q)
+          || pet.personality_tags.some(t => t.toLowerCase().includes(q))
+          || (pet.location || '').toLowerCase().includes(q);
+        if (!match) return false;
+      }
+      if (breedFilter !== 'Any Breed' && pet.breed !== breedFilter) return false;
+      if (ageFilter === 'Puppy (0-1 yr)' && pet.ageNum > 1) return false;
+      if (ageFilter === 'Young (1-3 yrs)' && (pet.ageNum < 1 || pet.ageNum > 3)) return false;
+      if (ageFilter === 'Adult (3-8 yrs)' && (pet.ageNum < 3 || pet.ageNum > 8)) return false;
+      if (ageFilter === 'Senior (8+ yrs)' && pet.ageNum < 8) return false;
+      return true;
+    });
+  }, [search, breedFilter, ageFilter, apiPets]);
+
+  const handleReset = () => {
+    setSearch('');
+    setBreedFilter('Any Breed');
+    setAgeFilter('Any Age');
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -104,36 +149,57 @@ const Adoption = () => {
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Search className="text-gray-400" size={18} />
                       </div>
-                      <input type="text" className="focus:ring-primary focus:border-primary block w-full pl-10 sm:text-sm border-gray-300 rounded-xl py-3" placeholder="e.g. 'Golden Retriever' or 'Playful'" />
+                      <input
+                        type="text"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="focus:ring-primary focus:border-primary block w-full pl-10 sm:text-sm border-gray-300 rounded-xl py-3"
+                        placeholder="e.g. 'Golden Retriever' or 'Playful'"
+                      />
                   </div>
               </div>
               <div className="lg:col-span-8 flex flex-col sm:flex-row gap-4 w-full">
                    <div className="w-full sm:w-1/3">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Breed</label>
-                        <select className="block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-xl">
+                        <select
+                          value={breedFilter}
+                          onChange={e => setBreedFilter(e.target.value)}
+                          className="block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-xl"
+                        >
                             <option>Any Breed</option>
-                            <option>Mixed Breed</option>
-                            <option>Golden Retriever</option>
-                            <option>Labrador</option>
+                            {allBreeds.map(b => <option key={b}>{b}</option>)}
                         </select>
                    </div>
                    <div className="w-full sm:w-1/3">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Age</label>
-                        <select className="block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-xl">
+                        <select
+                          value={ageFilter}
+                          onChange={e => setAgeFilter(e.target.value)}
+                          className="block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-xl"
+                        >
                             <option>Any Age</option>
                             <option>Puppy (0-1 yr)</option>
                             <option>Young (1-3 yrs)</option>
                             <option>Adult (3-8 yrs)</option>
+                            <option>Senior (8+ yrs)</option>
                         </select>
                    </div>
                    <div className="w-full sm:w-auto sm:flex-shrink-0">
                         <label className="block text-sm font-medium text-transparent mb-2 select-none">Action</label>
-                        <button className="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-orange-600 transition-colors shadow-lg shadow-primary/30">
-                            Apply Filters
+                        <button
+                          onClick={handleReset}
+                          className="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-orange-600 transition-colors shadow-lg shadow-primary/30"
+                        >
+                            Reset Filters
                         </button>
                    </div>
               </div>
           </div>
+      </div>
+
+      {/* Results count */}
+      <div className="mb-4 text-sm text-gray-500">
+        {filteredPets.length} pet{filteredPets.length !== 1 ? 's' : ''} found
       </div>
 
       {/* Grid */}
@@ -141,9 +207,14 @@ const Adoption = () => {
         <div className="flex justify-center items-center py-24">
           <Loader2 className="animate-spin text-primary" size={40} />
         </div>
+      ) : filteredPets.length === 0 ? (
+        <div className="text-center py-24 text-gray-400">
+          <p className="text-xl font-medium mb-4">No pets match your filters.</p>
+          <button onClick={handleReset} className="text-primary font-bold hover:underline">Reset Filters</button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {pets.map((pet) => (
+          {filteredPets.map((pet) => (
             <div key={pet.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full cursor-pointer">
               <div className="relative h-64 overflow-hidden bg-gray-100">
                 {pet.image ? (
