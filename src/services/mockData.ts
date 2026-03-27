@@ -436,7 +436,7 @@ export const mockMapMarkers: MapMarker[] = [
     petName: 'Bella',
     description: 'Lost in Capitol Hill near Volunteer Park. White Maltese, wearing pink bow. Please call if seen!',
     timeAgo: '5h ago',
-    image: 'https://images.unsplash.com/photo-1587015566802-46ad946db660?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    image: 'https://cdn.pixabay.com/photo/2016/12/13/05/15/puppy-1903313_640.jpg'
   },
   {
     id: 'm5',
@@ -445,7 +445,7 @@ export const mockMapMarkers: MapMarker[] = [
     type: 'stray',
     description: 'Large black dog spotted near Ballard Locks. Appears well-fed, possibly lost.',
     timeAgo: '30m ago',
-    image: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    image: 'https://cdn.pixabay.com/photo/2019/07/30/05/53/dog-4372036_640.jpg'
   },
   {
     id: 'm6',
@@ -455,6 +455,6 @@ export const mockMapMarkers: MapMarker[] = [
     petName: 'Oliver',
     description: 'Orange tabby cat missing from Pioneer Square area. Indoor cat, very shy. Has microchip.',
     timeAgo: '1d ago',
-    image: 'https://images.unsplash.com/photo-1495360010541-f48722b34f7d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    image: 'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_640.jpg'
   }
 ];

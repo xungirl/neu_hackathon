@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Search, AlertCircle, X, ChevronRight, MapPin, Clock, Navigation, Camera, Loader2 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, ZoomControl, ScaleControl } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+// leaflet CSS preloaded in index.html
 import { mockMapMarkers } from '../services/mockData';
 import LostPetMatcher from '../components/ai/LostPetMatcher';
 import { MatchLostDogResult } from '../types/ai';
@@ -193,9 +193,12 @@ const LostFound = () => {
                 </div>
                 <h3 className="font-bold text-gray-900 text-sm">{marker.petName || 'Unknown Pet'}</h3>
                 <p className="text-xs text-gray-600 mt-1">{marker.description}</p>
-                <button className="mt-2 w-full bg-primary text-white text-xs font-bold py-1.5 rounded-md hover:bg-orange-600 transition-colors">
+                <a
+                  href={`mailto:report@goodle.pet?subject=${encodeURIComponent(`[Goodle] ${marker.type === 'lost' ? 'Lost Pet' : 'Stray'}: ${marker.petName || 'Unknown'}`)}&body=${encodeURIComponent(`Hi,\n\nI saw your report on Goodle about "${marker.petName || 'a stray pet'}".\n\n"${marker.description}"\n\nI'd like to help! Here are my details:\n\nName: \nPhone: \nLocation: \n\nBest regards`)}`}
+                  className="mt-2 w-full bg-primary text-white text-xs font-bold py-1.5 rounded-md hover:bg-orange-600 transition-colors block text-center"
+                >
                   Contact Reporter
-                </button>
+                </a>
               </div>
             </Popup>
           </Marker>
