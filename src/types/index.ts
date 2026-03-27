@@ -5,14 +5,19 @@ export interface Pet {
   age: string; // e.g., "2 yrs", "5 mos"
   gender: 'Male' | 'Female';
   distance: string;
+  distanceKm: number;
+  size: 'Small' | 'Medium' | 'Large';
   image: string;
   images: string[];
   tags: string[]; // e.g., "Playful", "Vaccinated"
+  personality: string[]; // e.g., "Playful", "Calm", "Energetic", "Friendly"
   description: string;
   location: string;
   ownerName?: string;
   ownerImage?: string;
   status: 'Available' | 'Adopted' | 'Lost' | 'Found';
+  activityLevel: number; // 0-100
+  sociability: number; // 0-100
   health?: {
     vaccinated: boolean;
     neutered: boolean;
