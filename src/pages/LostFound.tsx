@@ -196,7 +196,7 @@ const LostFound = () => {
       >
         <TileLayer
           attribution='&copy; Google Maps'
-          url="https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+          url="https://{s}.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}"
           subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
           maxZoom={20}
           keepBuffer={4}
