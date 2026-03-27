@@ -195,9 +195,10 @@ const LostFound = () => {
         whenReady={() => setMapReady(true)}
       >
         <TileLayer
-          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
-          maxZoom={19}
+          attribution='&copy; Google Maps'
+          url="https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+          subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
+          maxZoom={20}
           keepBuffer={4}
           updateWhenZooming={false}
           updateWhenIdle={true}
