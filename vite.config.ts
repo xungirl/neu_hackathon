@@ -27,15 +27,5 @@ export default defineConfig(({ mode }) => {
           '@': path.resolve(__dirname, '.'),
         }
       },
-      build: {
-        rollupOptions: {
-          external: ['leaflet'],
-          output: {
-            globals: {
-              leaflet: 'L'
-            }
-          }
-        }
-      }
     };
 });
