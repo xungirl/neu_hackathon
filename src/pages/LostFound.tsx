@@ -123,20 +123,17 @@ const LostFound = () => {
 
     const addMarker = (lat: number, lng: number, type: 'lost' | 'stray', image: string, name: string, desc: string, time: string, extra?: { color?: string; size?: string }) => {
       const color = type === 'lost' ? '#3B82F6' : '#F97316';
-      const colorAlpha = type === 'lost' ? 'rgba(59,130,246,0.25)' : 'rgba(249,115,22,0.25)';
+      const colorAlpha = type === 'lost' ? 'rgba(59,130,246,0.2)' : 'rgba(249,115,22,0.2)';
       const el = document.createElement('div');
-      el.style.cssText = 'width:60px;height:60px;cursor:pointer;position:relative;';
+      el.style.cssText = 'width:42px;height:42px;cursor:pointer;overflow:visible;';
       el.innerHTML = `
         <style>
-          @keyframes ripple { 0% { transform:scale(0.8); opacity:0.6; } 100% { transform:scale(2.2); opacity:0; } }
+          @keyframes gd-ripple { 0% { transform:translate(-50%,-50%) scale(1); opacity:0.5; } 100% { transform:translate(-50%,-50%) scale(2.5); opacity:0; } }
         </style>
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-          <div style="position:absolute;width:42px;height:42px;border-radius:50%;background:${colorAlpha};animation:ripple 2s ease-out infinite;"></div>
-          <div style="position:absolute;width:42px;height:42px;border-radius:50%;background:${colorAlpha};animation:ripple 2s ease-out infinite 0.6s;"></div>
-          <div style="position:absolute;width:42px;height:42px;border-radius:50%;background:${colorAlpha};animation:ripple 2s ease-out infinite 1.2s;"></div>
-          <div style="position:relative;width:42px;height:42px;border-radius:50%;border:3px solid ${color};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3);background:#fff;z-index:1;">
-            <img src="${image}" style="width:100%;height:100%;object-fit:cover;" />
-          </div>
+        <div style="position:absolute;top:50%;left:50%;width:42px;height:42px;border-radius:50%;background:${colorAlpha};animation:gd-ripple 2.5s ease-out infinite;pointer-events:none;transform:translate(-50%,-50%);"></div>
+        <div style="position:absolute;top:50%;left:50%;width:42px;height:42px;border-radius:50%;background:${colorAlpha};animation:gd-ripple 2.5s ease-out infinite 0.8s;pointer-events:none;transform:translate(-50%,-50%);"></div>
+        <div style="width:42px;height:42px;border-radius:50%;border:3px solid ${color};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.3);background:#fff;position:relative;z-index:1;">
+          <img src="${image}" style="width:100%;height:100%;object-fit:cover;" />
         </div>
       `;
 
@@ -157,7 +154,7 @@ const LostFound = () => {
         </div>
       `);
 
-      const marker = new maplibregl.Marker({ element: el }).setLngLat([lng, lat]).setPopup(popup).addTo(mapRef.current!);
+      const marker = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([lng, lat]).setPopup(popup).addTo(mapRef.current!);
       markersRef.current.push(marker);
     };
 
