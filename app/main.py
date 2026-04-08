@@ -12,6 +12,7 @@ from app.ai import DogMatcher, GeminiClient, MockGeminiClient, PhotoAnalyzer, Vi
 from app.api.ai_routes import router as ai_router
 from app.routes.auth import router as auth_router
 from app.routes.pets import router as pets_router
+from app.routes.chat import router as chat_router
 from app.routes.reports import router as reports_router, initialize_reports_table
 from app.core.response import api_error, api_success
 from app.core.settings import Settings, get_settings
@@ -122,6 +123,7 @@ def create_app() -> FastAPI:
     app.include_router(ai_router, prefix=settings.api_prefix)
     app.include_router(auth_router, prefix=settings.api_prefix)
     app.include_router(pets_router, prefix=settings.api_prefix)
+    app.include_router(chat_router, prefix=settings.api_prefix)
     app.include_router(reports_router, prefix=settings.api_prefix)
     return app
 

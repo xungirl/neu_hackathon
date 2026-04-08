@@ -132,6 +132,25 @@ class GeminiClient:
         except Exception as exc:
             raise RuntimeError("No Gemini SDK available. Install `google-genai`.") from exc
 
+    def generate_text(
+        self,
+        prompt: str,
+        *,
+        temperature: Optional[float] = None,
+        max_output_tokens: int = 1024,
+    ) -> str:
+        from google.genai import types as genai_types
+        config = genai_types.GenerateContentConfig(
+            temperature=self.default_temperature if temperature is None else temperature,
+            max_output_tokens=max_output_tokens,
+        )
+        response = self._backend._client.models.generate_content(
+            model=self.image_model,
+            contents=[prompt],
+            config=config,
+        )
+        return self._extract_response_text(response)
+
     def generate_json(
         self,
         prompt: str,

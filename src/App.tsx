@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ChatAssistant from './components/ChatAssistant';
 import Home from './pages/Home';
 import Matching from './pages/Matching';
 import Adoption from './pages/Adoption';
@@ -35,6 +36,7 @@ const App = () => {
                 <Route path="/post" element={<PostPet />} />
               </Routes>
               <Footer />
+              <ChatAssistant />
             </div>
           } />
         </Routes>

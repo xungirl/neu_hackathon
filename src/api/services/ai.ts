@@ -57,4 +57,7 @@ export const aiService = {
 
   listMatchNotifications: () =>
     client.get<MatchNotification[]>('/ai/notifications'),
+
+  chat: (message: string) =>
+    client.post<{ reply: string }>('/chat/ask', { message }),
 };

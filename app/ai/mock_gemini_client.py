@@ -13,6 +13,15 @@ class MockGeminiClient:
     def __init__(self, *_: Any, **__: Any) -> None:
         pass
 
+    def generate_text(
+        self,
+        prompt: str,
+        *,
+        temperature: Optional[float] = None,
+        max_output_tokens: int = 1024,
+    ) -> str:
+        return "Hi! I'm Goodle's AI assistant. I can help you find pets for adoption or answer questions about the platform. (Mock mode)"
+
     def generate_json(
         self,
         prompt: str,
